@@ -1,0 +1,12 @@
+{
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:server": "npm run dev -w @go-out-planner/server",
+    "dev:client": "npm run dev -w @go-out-planner/client",
+    "db:migrate": "npm run db:migrate -w @go-out-planner/server",
+    "db:generate": "npm run db:generate -w @go-out-planner/server"
+  }
+}

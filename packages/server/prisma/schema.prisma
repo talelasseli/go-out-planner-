@@ -1,0 +1,167 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model user {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  emailVerified Boolean @default(false)
+  name         String?
+  image        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  session session[]
+  account account[]
+}
+
+model session {
+  id        String   @id @default(cuid())
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      user     @relation(fields: [userId], references: [id])
+}
+
+model account {
+  id                    String    @id @default(cuid())
+  accountId             String
+  providerId            String
+  userId                String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  user user @relation(fields: [userId], references: [id])
+}
+
+model verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Profile {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  username    String   @unique
+  displayName String?
+  createdAt   DateTime @default(now())
+
+  sentRequests     FriendRequest[]    @relation("SentRequests")
+  receivedRequests FriendRequest[]    @relation("ReceivedRequests")
+  friendships      Friendship[]       @relation("UserFriendships")
+  friendOf         Friendship[]       @relation("FriendOf")
+  createdPlans     Plan[]             @relation("CreatedPlans")
+  planInvitations  PlanInvitation[]
+
+  @@map("profiles")
+}
+
+model FriendRequest {
+  id          String              @id @default(uuid())
+  senderId    String
+  receiverId  String
+  status      FriendRequestStatus @default(PENDING)
+  createdAt   DateTime            @default(now())
+  respondedAt DateTime?
+
+  sender   Profile @relation("SentRequests", fields: [senderId], references: [id])
+  receiver Profile @relation("ReceivedRequests", fields: [receiverId], references: [id])
+
+  @@unique([senderId, receiverId])
+  @@map("friend_requests")
+}
+
+enum FriendRequestStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+model Friendship {
+  id        String   @id @default(uuid())
+  userId    String
+  friendId  String
+  createdAt DateTime @default(now())
+
+  user   Profile @relation("UserFriendships", fields: [userId], references: [id])
+  friend Profile @relation("FriendOf", fields: [friendId], references: [id])
+
+  @@unique([userId, friendId])
+  @@map("friendships")
+}
+
+model Plan {
+  id        String     @id @default(uuid())
+  creatorId String
+  title     String
+  planDate  DateTime
+  planTime  String
+  place     String
+  status    PlanStatus @default(ACTIVE)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  deletedAt DateTime?
+
+  creator     Profile          @relation("CreatedPlans", fields: [creatorId], references: [id])
+  activities  PlanActivity[]
+  invitations PlanInvitation[]
+
+  @@map("plans")
+}
+
+enum PlanStatus {
+  ACTIVE
+  CANCELLED
+}
+
+model PlanActivity {
+  id           String   @id @default(uuid())
+  planId       String
+  activityName String
+  createdAt    DateTime @default(now())
+
+  plan Plan @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  @@map("plan_activities")
+}
+
+model PlanInvitation {
+  id            String           @id @default(uuid())
+  planId        String
+  invitedUserId String
+  status        InvitationStatus @default(PENDING)
+  createdAt     DateTime         @default(now())
+  respondedAt   DateTime?
+
+  plan    Plan    @relation(fields: [planId], references: [id], onDelete: Cascade)
+  invitee Profile @relation(fields: [invitedUserId], references: [id])
+
+  @@unique([planId, invitedUserId])
+  @@map("plan_invitations")
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
