@@ -8,4 +8,17 @@ export const auth = betterAuth({
   emailAndPassword: { enabled: true },
   baseURL: config.betterAuthUrl,
   trustedOrigins: [config.clientUrl],
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+    },
+  },
+  account: {
+    accountLinking: {
+      enabled: true,
+      trustedProviders: ["google", "email-password"],
+      requireLocalEmailVerified: false,
+    },
+  },
 });
