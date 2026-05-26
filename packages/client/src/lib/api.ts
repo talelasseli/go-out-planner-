@@ -4,8 +4,10 @@ export class ApiError extends Error {
   }
 }
 
+const BASE = import.meta.env.VITE_API_URL ?? "";
+
 async function request<T>(path: string, { headers, ...rest }: RequestInit = {}): Promise<T> {
-  const res = await fetch(`/api${path}`, {
+  const res = await fetch(`${BASE}/api${path}`, {
     credentials: "include",
     headers: { "Content-Type": "application/json", ...headers as Record<string, string> },
     ...rest,
