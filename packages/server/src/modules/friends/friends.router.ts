@@ -37,8 +37,9 @@ router.get("/friend-requests/received", requireAuth, async (req, res, next) => {
 
 router.patch("/friend-requests/:requestId/accept", requireAuth, async (req, res, next) => {
   try {
+    const { requestId } = req.params as { requestId: string };
     const profile = await usersService.assertProfileExists(prisma, req.userId!);
-    const result = await friendsService.acceptFriendRequest(prisma, req.params.requestId, profile.id);
+    const result = await friendsService.acceptFriendRequest(prisma, requestId, profile.id);
     res.json(result);
   } catch (e) {
     next(e);
@@ -47,8 +48,9 @@ router.patch("/friend-requests/:requestId/accept", requireAuth, async (req, res,
 
 router.patch("/friend-requests/:requestId/reject", requireAuth, async (req, res, next) => {
   try {
+    const { requestId } = req.params as { requestId: string };
     const profile = await usersService.assertProfileExists(prisma, req.userId!);
-    const result = await friendsService.rejectFriendRequest(prisma, req.params.requestId, profile.id);
+    const result = await friendsService.rejectFriendRequest(prisma, requestId, profile.id);
     res.json(result);
   } catch (e) {
     next(e);

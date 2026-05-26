@@ -16,7 +16,7 @@ export async function requireAuth(
   next: NextFunction,
 ): Promise<void> {
   try {
-    const session = await auth.api.getSession({ headers: req.headers });
+    const session = await auth.api.getSession({ headers: req.headers as HeadersInit });
 
     if (!session) {
       throw new AppError(401, "Unauthorized");

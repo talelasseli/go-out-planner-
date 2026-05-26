@@ -40,8 +40,9 @@ router.get("/plans/invited", requireAuth, async (req, res, next) => {
 
 router.get("/plans/:planId", requireAuth, async (req, res, next) => {
   try {
+    const { planId } = req.params as { planId: string };
     const profile = await usersService.assertProfileExists(prisma, req.userId!);
-    const plan = await plansService.getPlanById(prisma, req.params.planId, profile.id);
+    const plan = await plansService.getPlanById(prisma, planId, profile.id);
     res.json(plan);
   } catch (e) {
     next(e);
@@ -50,8 +51,9 @@ router.get("/plans/:planId", requireAuth, async (req, res, next) => {
 
 router.patch("/plans/:planId", requireAuth, validate(editPlanSchema), async (req, res, next) => {
   try {
+    const { planId } = req.params as { planId: string };
     const profile = await usersService.assertProfileExists(prisma, req.userId!);
-    const plan = await plansService.editPlan(prisma, profile.id, req.params.planId, req.body);
+    const plan = await plansService.editPlan(prisma, profile.id, planId, req.body);
     res.json(plan);
   } catch (e) {
     next(e);
@@ -60,8 +62,9 @@ router.patch("/plans/:planId", requireAuth, validate(editPlanSchema), async (req
 
 router.patch("/plans/:planId/cancel", requireAuth, async (req, res, next) => {
   try {
+    const { planId } = req.params as { planId: string };
     const profile = await usersService.assertProfileExists(prisma, req.userId!);
-    const plan = await plansService.cancelPlan(prisma, profile.id, req.params.planId);
+    const plan = await plansService.cancelPlan(prisma, profile.id, planId);
     res.json(plan);
   } catch (e) {
     next(e);
@@ -70,8 +73,9 @@ router.patch("/plans/:planId/cancel", requireAuth, async (req, res, next) => {
 
 router.delete("/plans/:planId", requireAuth, async (req, res, next) => {
   try {
+    const { planId } = req.params as { planId: string };
     const profile = await usersService.assertProfileExists(prisma, req.userId!);
-    await plansService.deletePlan(prisma, profile.id, req.params.planId);
+    await plansService.deletePlan(prisma, profile.id, planId);
     res.status(204).send();
   } catch (e) {
     next(e);

@@ -18,8 +18,9 @@ router.get("/invitations", requireAuth, async (req, res, next) => {
 
 router.patch("/invitations/:invitationId/accept", requireAuth, async (req, res, next) => {
   try {
+    const { invitationId } = req.params as { invitationId: string };
     const profile = await usersService.assertProfileExists(prisma, req.userId!);
-    const result = await invitationsService.acceptInvitation(prisma, req.params.invitationId, profile.id);
+    const result = await invitationsService.acceptInvitation(prisma, invitationId, profile.id);
     res.json(result);
   } catch (e) {
     next(e);
@@ -28,8 +29,9 @@ router.patch("/invitations/:invitationId/accept", requireAuth, async (req, res, 
 
 router.patch("/invitations/:invitationId/decline", requireAuth, async (req, res, next) => {
   try {
+    const { invitationId } = req.params as { invitationId: string };
     const profile = await usersService.assertProfileExists(prisma, req.userId!);
-    const result = await invitationsService.declineInvitation(prisma, req.params.invitationId, profile.id);
+    const result = await invitationsService.declineInvitation(prisma, invitationId, profile.id);
     res.json(result);
   } catch (e) {
     next(e);
