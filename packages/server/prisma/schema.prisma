@@ -117,8 +117,11 @@ model Plan {
   title     String
   planDate  DateTime
   planTime  String
-  place     String
-  status    PlanStatus @default(ACTIVE)
+  place       String
+  latitude    Float?
+  longitude   Float?
+  meetupPlace String?
+  status      PlanStatus @default(ACTIVE)
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   deletedAt DateTime?

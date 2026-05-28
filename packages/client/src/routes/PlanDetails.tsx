@@ -2,6 +2,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { api } from "../lib/api";
 import type { Plan } from "../lib/types";
+import MapView from "../components/MapView";
 
 export default function PlanDetails() {
   const { id } = useParams<{ id: string }>();
@@ -74,7 +75,15 @@ export default function PlanDetails() {
             <span className="text-gray-500">Place</span>
             <p className="font-medium">{plan.place}</p>
           </div>
+          {plan.meetupPlace && (
+            <div className="col-span-2">
+              <span className="text-gray-500">Meetup spot</span>
+              <p className="font-medium">{plan.meetupPlace}</p>
+            </div>
+          )}
         </div>
+
+        <MapView latitude={plan.latitude} longitude={plan.longitude} place={plan.place} />
 
         {plan.activities.length > 0 && (
           <div>

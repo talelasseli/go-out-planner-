@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../lib/api";
 import type { Plan } from "../lib/types";
+import MapView from "../components/MapView";
 
 export default function MyPlans() {
   const [plans, setPlans] = useState<Plan[]>([]);
@@ -52,6 +53,12 @@ export default function MyPlans() {
                       ))}
                     </div>
                   )}
+                  <MapView
+                    latitude={plan.latitude}
+                    longitude={plan.longitude}
+                    place={plan.place}
+                    containerClassName="h-24 rounded-lg overflow-hidden border mt-2"
+                  />
                 </div>
                 <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${
                   plan.status === "CANCELLED" ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700"

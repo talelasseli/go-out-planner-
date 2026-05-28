@@ -2,21 +2,28 @@ import { useEffect, useState, type FormEvent } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { api } from "../lib/api";
 import type { Friendship } from "../lib/types";
+import MapPicker from "../components/MapPicker";
+import { useLocalStorage } from "../lib/useLocalStorage";
 
 export default function EditPlan() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [friends, setFriends] = useState<Friendship[]>([]);
   const [loading, setLoading] = useState(true);
-  const [title, setTitle] = useState("");
-  const [planDate, setPlanDate] = useState("");
-  const [planTime, setPlanTime] = useState("");
-  const [place, setPlace] = useState("");
-  const [activities, setActivities] = useState<string[]>([]);
+  const [title, setTitle] = useLocalStorage(`editPlan_${id}_title`, "");
+  const [planDate, setPlanDate] = useLocalStorage(`editPlan_${id}_date`, "");
+  const [planTime, setPlanTime] = useLocalStorage(`editPlan_${id}_time`, "");
+  const [place, setPlace] = useLocalStorage(`editPlan_${id}_place`, "");
+  const [latitude, setLatitude] = useLocalStorage<number | null>(`editPlan_${id}_lat`, null);
+  const [longitude, setLongitude] = useLocalStorage<number | null>(`editPlan_${id}_lng`, null);
+  const [meetupPlace, setMeetupPlace] = useLocalStorage(`editPlan_${id}_meetupPlace`, "");
+  const [activities, setActivities] = useLocalStorage<string[]>(`editPlan_${id}_activities`, []);
   const [activityInput, setActivityInput] = useState("");
-  const [selectedFriends, setSelectedFriends] = useState<Set<string>>(new Set());
+  const [selectedFriends, setSelectedFriends] = useLocalStorage<string[]>(`editPlan_${id}_friendIds`, []);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+
+  const selectedSet = new Set(selectedFriends);
 
   useEffect(() => {
     if (!id) return;
@@ -28,8 +35,11 @@ export default function EditPlan() {
       setPlanDate(plan.planDate.split("T")[0]);
       setPlanTime(plan.planTime);
       setPlace(plan.place);
+      setLatitude(plan.latitude);
+      setLongitude(plan.longitude);
+      setMeetupPlace(plan.meetupPlace ?? "");
       setActivities(plan.activities.map((a) => a.activityName));
-      setSelectedFriends(new Set(plan.invitations.map((i) => i.invitedUserId)));
+      setSelectedFriends(plan.invitations.map((i) => i.invitedUserId));
       setFriends(f);
     }).catch(() => navigate("/plans/mine"))
     .finally(() => setLoading(false));
@@ -46,9 +56,9 @@ export default function EditPlan() {
   };
 
   const toggleFriend = (friendId: string) => {
-    const next = new Set(selectedFriends);
-    next.has(friendId) ? next.delete(friendId) : next.add(friendId);
-    setSelectedFriends(next);
+    setSelectedFriends((prev) =>
+      prev.includes(friendId) ? prev.filter((f) => f !== friendId) : [...prev, friendId],
+    );
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -63,9 +73,22 @@ export default function EditPlan() {
         planDate: new Date(planDate).toISOString(),
         planTime,
         place,
+        latitude: latitude ?? undefined,
+        longitude: longitude ?? undefined,
+        meetupPlace: meetupPlace || undefined,
         activities,
-        invitedFriendIds: Array.from(selectedFriends),
+        invitedFriendIds: selectedFriends,
       });
+      const prefix = `editPlan_${id}`;
+      localStorage.removeItem(`${prefix}_title`);
+      localStorage.removeItem(`${prefix}_date`);
+      localStorage.removeItem(`${prefix}_time`);
+      localStorage.removeItem(`${prefix}_place`);
+      localStorage.removeItem(`${prefix}_lat`);
+      localStorage.removeItem(`${prefix}_lng`);
+      localStorage.removeItem(`${prefix}_meetupPlace`);
+      localStorage.removeItem(`${prefix}_activities`);
+      localStorage.removeItem(`${prefix}_friendIds`);
       navigate(`/plans/${plan.id}`);
     } catch (err: any) {
       setError(err.message || "Failed to update plan");
@@ -103,7 +126,19 @@ export default function EditPlan() {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Place</label>
-          <input type="text" required value={place} onChange={(e) => setPlace(e.target.value)}
+          <MapPicker
+            place={place}
+            latitude={latitude}
+            longitude={longitude}
+            onPlaceChange={setPlace}
+            onLatLngChange={(lat, lng) => { setLatitude(lat); setLongitude(lng); }}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Meetup spot (optional)</label>
+          <input type="text" value={meetupPlace} onChange={(e) => setMeetupPlace(e.target.value)}
+            placeholder="e.g. main entrance, fountain, table 5..."
             className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
         </div>
 
@@ -129,12 +164,12 @@ export default function EditPlan() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Invite friends ({selectedFriends.size})</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Invite friends ({selectedSet.size})</label>
           <div className="max-h-48 overflow-y-auto border rounded-lg divide-y">
             {friends.map((f) => (
               <label key={f.id}
-                className={`flex items-center gap-3 px-3 py-2.5 cursor-pointer text-sm ${selectedFriends.has(f.friendId) ? "bg-blue-50" : "hover:bg-gray-50"}`}>
-                <input type="checkbox" checked={selectedFriends.has(f.friendId)}
+                className={`flex items-center gap-3 px-3 py-2.5 cursor-pointer text-sm ${selectedSet.has(f.friendId) ? "bg-blue-50" : "hover:bg-gray-50"}`}>
+                <input type="checkbox" checked={selectedSet.has(f.friendId)}
                   onChange={() => toggleFriend(f.friendId)} className="rounded" />
                 {f.friend.displayName || f.friend.username}
               </label>

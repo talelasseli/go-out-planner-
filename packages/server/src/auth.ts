@@ -21,4 +21,5 @@ export const auth = betterAuth({
       requireLocalEmailVerified: false,
     },
   },
+
 });

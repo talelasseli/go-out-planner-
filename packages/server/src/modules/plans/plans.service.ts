@@ -9,6 +9,9 @@ export async function createPlan(
     planDate: string;
     planTime: string;
     place: string;
+    latitude?: number;
+    longitude?: number;
+    meetupPlace?: string;
     activities: string[];
     invitedFriendIds: string[];
   },
@@ -29,6 +32,9 @@ export async function createPlan(
         planDate: new Date(data.planDate),
         planTime: data.planTime,
         place: data.place,
+        latitude: data.latitude ?? null,
+        longitude: data.longitude ?? null,
+        meetupPlace: data.meetupPlace ?? null,
         activities: {
           create: data.activities.map((name) => ({ activityName: name })),
         },
@@ -120,6 +126,9 @@ export async function editPlan(
     planDate?: string;
     planTime?: string;
     place?: string;
+    latitude?: number;
+    longitude?: number;
+    meetupPlace?: string;
     activities?: string[];
     invitedFriendIds?: string[];
   },
@@ -136,6 +145,9 @@ export async function editPlan(
     if (data.planDate) updateData.planDate = new Date(data.planDate);
     if (data.planTime) updateData.planTime = data.planTime;
     if (data.place) updateData.place = data.place;
+    if (data.latitude !== undefined) updateData.latitude = data.latitude;
+    if (data.longitude !== undefined) updateData.longitude = data.longitude;
+    if (data.meetupPlace !== undefined) updateData.meetupPlace = data.meetupPlace;
 
     if (data.activities) {
       await tx.planActivity.deleteMany({ where: { planId } });

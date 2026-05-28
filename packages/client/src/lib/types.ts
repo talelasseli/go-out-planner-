@@ -48,6 +48,9 @@ export interface Plan {
   planDate: string;
   planTime: string;
   place: string;
+  latitude: number | null;
+  longitude: number | null;
+  meetupPlace: string | null;
   status: "ACTIVE" | "CANCELLED";
   createdAt: string;
   updatedAt: string;
@@ -72,6 +75,9 @@ export interface CreatePlanInput {
   planDate: string;
   planTime: string;
   place: string;
+  latitude?: number;
+  longitude?: number;
+  meetupPlace?: string;
   activities: string[];
   invitedFriendIds: string[];
 }
@@ -81,6 +87,9 @@ export interface EditPlanInput {
   planDate?: string;
   planTime?: string;
   place?: string;
+  latitude?: number;
+  longitude?: number;
+  meetupPlace?: string;
   activities?: string[];
   invitedFriendIds?: string[];
 }
