@@ -1,51 +1,14 @@
 services:
   db:
-    image: postgres:16-alpine
-    restart: unless-stopped
+    image: postgres:16
+    environment:
+      POSTGRES_DB: gooutplanner
+      POSTGRES_USER: gooutplanner
+      POSTGRES_PASSWORD: gooutplanner
     ports:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: go_out_planner
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
-  server:
-    build:
-      context: .
-      dockerfile: Dockerfile.server
-    restart: unless-stopped
-    ports:
-      - "3001:3001"
-    environment:
-      DATABASE_URL: "postgresql://postgres:postgres@db:5432/go_out_planner"
-      BETTER_AUTH_URL: "http://localhost:3001"
-      BETTER_AUTH_SECRET: "${BETTER_AUTH_SECRET}"
-      CLIENT_URL: "http://localhost:5173"
-      PORT: "3001"
-      GOOGLE_CLIENT_ID: "${GOOGLE_CLIENT_ID}"
-      GOOGLE_CLIENT_SECRET: "${GOOGLE_CLIENT_SECRET}"
-    depends_on:
-      db:
-        condition: service_healthy
-
-  client:
-    build:
-      context: .
-      dockerfile: Dockerfile.client
-      args:
-        VITE_API_URL: "http://localhost:3001"
-    restart: unless-stopped
-    ports:
-      - "5173:5173"
-    depends_on:
-      - server
 
 volumes:
   pgdata:

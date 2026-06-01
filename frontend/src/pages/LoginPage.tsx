@@ -1,0 +1,110 @@
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { authClient } from "@/lib/auth-client";
+import { Button } from "@/components/ui/button";
+
+export default function LoginPage() {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    await authClient.signIn.email(
+      { email, password },
+      {
+        onSuccess: () => navigate("/dashboard"),
+        onError: (ctx) => setError(ctx.error.message),
+      },
+    );
+
+    setLoading(false);
+  };
+
+  return (
+    <div className="flex min-h-screen items-center justify-center px-4">
+      <div className="w-full max-w-sm space-y-6">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold">Sign in</h1>
+          <p className="text-muted-foreground mt-1 text-sm">
+            Welcome back to Go Out Planner
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <label htmlFor="email" className="text-sm font-medium">
+              Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              required
+              className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-9 w-full rounded-lg border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="password" className="text-sm font-medium">
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter your password"
+              required
+              className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-9 w-full rounded-lg border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+            />
+          </div>
+
+          {error && (
+            <p className="text-destructive text-sm">{error}</p>
+          )}
+
+          <Button type="submit" disabled={loading} className="w-full">
+            {loading ? "Signing in..." : "Sign in"}
+          </Button>
+        </form>
+
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-background text-muted-foreground px-2">or</span>
+          </div>
+        </div>
+
+        <Button
+          variant="outline"
+          onClick={() =>
+            authClient.signIn.social({
+              provider: "google",
+              callbackURL: `${import.meta.env.VITE_APP_URL}/dashboard`,
+            })
+          }
+          className="w-full"
+        >
+          Continue with Google
+        </Button>
+
+        <p className="text-muted-foreground text-center text-sm">
+          Don't have an account?{" "}
+          <Link to="/register" className="text-foreground underline underline-offset-4 hover:no-underline">
+            Sign up
+          </Link>
+        </p>
+      </div>
+    </div>
+  );
+}
