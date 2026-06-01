@@ -13,6 +13,17 @@ enum FriendRequestStatus {
   REJECTED
 }
 
+enum PlanStatus {
+  ACTIVE
+  CANCELLED
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
 model User {
   id            String    @id
   name          String?
@@ -31,6 +42,9 @@ model User {
   receivedFriendRequests FriendRequest[] @relation("ReceivedFriendRequests")
   friendships            Friendship[]    @relation("UserFriendships")
   friendOf               Friendship[]    @relation("FriendOf")
+
+  createdPlans Plan[]             @relation("CreatedPlans")
+  invitations  PlanInvitation[]   @relation("UserInvitations")
 
   @@unique([email])
   @@map("user")
@@ -64,6 +78,52 @@ model Friendship {
   @@unique([userId, friendId])
   @@index([friendId])
   @@map("friendships")
+}
+
+model Plan {
+  id          String     @id @default(cuid())
+  creatorId   String
+  title       String
+  scheduledAt DateTime
+  place       String
+  status      PlanStatus @default(ACTIVE)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  creator     User             @relation("CreatedPlans", fields: [creatorId], references: [id], onDelete: Cascade)
+  activities  PlanActivity[]
+  invitations PlanInvitation[] @relation("PlanInvitations")
+
+  @@index([creatorId])
+  @@map("plans")
+}
+
+model PlanActivity {
+  id           String   @id @default(cuid())
+  planId       String
+  activityName String
+  createdAt    DateTime @default(now())
+
+  plan Plan @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  @@index([planId])
+  @@map("plan_activities")
+}
+
+model PlanInvitation {
+  id            String           @id @default(cuid())
+  planId        String
+  invitedUserId String
+  status        InvitationStatus @default(PENDING)
+  createdAt     DateTime         @default(now())
+  respondedAt   DateTime?
+
+  plan        Plan @relation("PlanInvitations", fields: [planId], references: [id], onDelete: Cascade)
+  invitedUser User @relation("UserInvitations", fields: [invitedUserId], references: [id], onDelete: Cascade)
+
+  @@unique([planId, invitedUserId])
+  @@index([invitedUserId, status])
+  @@map("plan_invitations")
 }
 
 model Session {

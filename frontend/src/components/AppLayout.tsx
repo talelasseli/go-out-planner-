@@ -27,6 +27,18 @@ export default function AppLayout() {
           <Link to="/friends">
             <Button variant="ghost">Friends</Button>
           </Link>
+          <Link to="/plans/create">
+            <Button variant="ghost">New Plan</Button>
+          </Link>
+          <Link to="/plans/created">
+            <Button variant="ghost">My Plans</Button>
+          </Link>
+          <Link to="/plans/invited">
+            <Button variant="ghost">Invited</Button>
+          </Link>
+          <Link to="/invitations">
+            <Button variant="ghost">Invitations</Button>
+          </Link>
           <Button variant="outline" onClick={handleSignOut}>
             Sign out
           </Button>

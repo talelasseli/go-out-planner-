@@ -26,5 +26,5 @@ export async function httpClient<T>(
     throw new HttpError(res.status, body.message || "Request failed");
   }
 
-  return body.data as T;
+  return (body.data ?? body) as T;
 }
