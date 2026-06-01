@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { PlanCard } from "@/components/PlanCard";
+import { Skeleton } from "@/components/ui/skeleton";
 import { getInvitedPlans, type InvitedPlan } from "@/features/plans/api/plans";
 
 export default function InvitedPlansPage() {
@@ -29,7 +30,7 @@ export default function InvitedPlansPage() {
   }, []);
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6 px-4 py-8">
+    <div className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-8">
       <div>
         <h1 className="text-2xl font-bold">Invited Plans</h1>
         <p className="text-muted-foreground mt-1 text-sm">
@@ -40,11 +41,11 @@ export default function InvitedPlansPage() {
       {error && <p className="text-destructive text-sm">{error}</p>}
 
       {loading ? (
-        <p className="text-muted-foreground text-sm">Loading...</p>
+        <Skeleton className="h-4 w-3/4" />
       ) : plans.length === 0 ? (
         <p className="text-muted-foreground text-sm">No plans yet.</p>
       ) : (
-        <div className="space-y-2">
+        <div className="flex flex-col gap-2">
           {plans.map((plan) => (
             <PlanCard
               key={plan.id}

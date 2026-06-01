@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 interface PlanCardProps {
   id: string;
@@ -42,22 +43,25 @@ export function PlanCard({
           <div className="flex items-center gap-2">
             <p className="text-sm font-medium">{title}</p>
             {status === "CANCELLED" && (
-              <span className="rounded bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700">
+              <Badge variant="destructive" className="gap-1.5">
+                <span className="size-1.5 rounded-full bg-current" />
                 Cancelled
-              </span>
+              </Badge>
             )}
             {invitationStatus && status === "ACTIVE" && (
-              <span
-                className={`rounded px-2 py-0.5 text-xs font-medium ${
+              <Badge
+                variant={
                   invitationStatus === "PENDING"
-                    ? "bg-yellow-100 text-yellow-700"
+                    ? "secondary"
                     : invitationStatus === "ACCEPTED"
-                      ? "bg-green-100 text-green-700"
-                      : "bg-gray-100 text-gray-700"
-                }`}
+                      ? "default"
+                      : "outline"
+                }
+                className="gap-1.5"
               >
+                <span className="size-1.5 rounded-full bg-current" />
                 {invitationStatus}
-              </span>
+              </Badge>
             )}
           </div>
           <p className="text-muted-foreground mt-0.5 text-xs">

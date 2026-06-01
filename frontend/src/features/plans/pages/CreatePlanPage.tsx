@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
 import { createPlan } from "@/features/plans/api/plans";
 import { getFriends, type FriendItem } from "@/features/friends/api/friends";
 
@@ -115,7 +117,7 @@ export default function CreatePlanPage() {
   const minDatetime = localNow.toISOString().slice(0, 16);
 
   return (
-    <div className="mx-auto max-w-lg space-y-6 px-4 py-8">
+    <div className="mx-auto flex max-w-lg flex-col gap-6 px-4 py-8">
       <div>
         <h1 className="text-2xl font-bold">Create Plan</h1>
         <p className="text-muted-foreground mt-1 text-sm">
@@ -123,8 +125,8 @@ export default function CreatePlanPage() {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="space-y-2">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <div className="flex flex-col gap-2">
           <label htmlFor="title" className="text-sm font-medium">Title</label>
           <Input
             id="title"
@@ -137,7 +139,7 @@ export default function CreatePlanPage() {
           )}
         </div>
 
-        <div className="space-y-2">
+        <div className="flex flex-col gap-2">
           <label htmlFor="scheduledAt" className="text-sm font-medium">Date & Time</label>
           <Input
             id="scheduledAt"
@@ -151,7 +153,7 @@ export default function CreatePlanPage() {
           )}
         </div>
 
-        <div className="space-y-2">
+        <div className="flex flex-col gap-2">
           <label htmlFor="place" className="text-sm font-medium">Place</label>
           <Input
             id="place"
@@ -164,7 +166,7 @@ export default function CreatePlanPage() {
           )}
         </div>
 
-        <div className="space-y-2">
+        <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
             <label className="text-sm font-medium">Activities</label>
             {activities.length < 10 && (
@@ -173,7 +175,7 @@ export default function CreatePlanPage() {
               </Button>
             )}
           </div>
-          <div className="space-y-2">
+          <div className="flex flex-col gap-2">
             {activities.map((activity, index) => (
               <div key={index} className="flex gap-2">
                 <Input
@@ -199,7 +201,7 @@ export default function CreatePlanPage() {
           )}
         </div>
 
-        <div className="space-y-2">
+        <div className="flex flex-col gap-2">
           <label className="text-sm font-medium">
             Invite Friends
             {selectedFriends.length > 0 && (
@@ -209,17 +211,17 @@ export default function CreatePlanPage() {
             )}
           </label>
           {friendsLoading ? (
-            <p className="text-muted-foreground text-sm">Loading friends...</p>
+            <Skeleton className="h-4 w-1/3" />
           ) : friends.length === 0 ? (
             <p className="text-muted-foreground text-sm">
               You have no friends to invite. Add friends first.
             </p>
           ) : (
-            <div className="max-h-48 space-y-1 overflow-y-auto rounded-lg border p-2">
+            <div className="max-h-48 flex flex-col gap-1 overflow-y-auto rounded-lg border p-2">
               {friends.map((friend) => (
                 <label
                   key={friend.id}
-                  className="flex cursor-pointer items-center gap-3 rounded px-2 py-1.5 hover:bg-gray-50"
+                  className="flex cursor-pointer items-center gap-3 rounded px-2 py-1.5 hover:bg-muted"
                 >
                   <input
                     type="checkbox"
@@ -228,9 +230,9 @@ export default function CreatePlanPage() {
                     className="h-4 w-4"
                   />
                   <div className="flex items-center gap-2">
-                    <div className="bg-muted flex h-7 w-7 items-center justify-center rounded-full text-xs font-medium">
-                      {friend.name?.charAt(0) ?? "?"}
-                    </div>
+                    <Avatar className="size-7">
+                      <AvatarFallback className="text-xs">{friend.name?.charAt(0) ?? "?"}</AvatarFallback>
+                    </Avatar>
                     <div>
                       <p className="text-sm">{friend.name}</p>
                       {friend.username && (

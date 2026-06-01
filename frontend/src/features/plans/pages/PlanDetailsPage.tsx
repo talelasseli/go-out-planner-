@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   getPlanDetails,
   cancelPlan,
@@ -80,7 +83,7 @@ export default function PlanDetailsPage() {
   if (loading) {
     return (
       <div className="mx-auto max-w-xl px-4 py-8">
-        <p className="text-muted-foreground">Loading...</p>
+        <Skeleton className="h-6 w-3/4" />
       </div>
     );
   }
@@ -106,15 +109,16 @@ export default function PlanDetailsPage() {
   const declinedCount = plan.invitations.filter((i) => i.status === "DECLINED").length;
 
   return (
-    <div className="mx-auto max-w-xl space-y-6 px-4 py-8">
+    <div className="mx-auto flex max-w-xl flex-col gap-6 px-4 py-8">
       <div className="flex items-start justify-between">
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-bold">{plan.title}</h1>
             {plan.status === "CANCELLED" && (
-              <span className="rounded bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700">
+              <Badge variant="destructive" className="gap-1.5">
+                <span className="size-1.5 rounded-full bg-current" />
                 Cancelled
-              </span>
+              </Badge>
             )}
           </div>
           <p className="text-muted-foreground mt-1 text-sm">
@@ -138,7 +142,7 @@ export default function PlanDetailsPage() {
         )}
       </div>
 
-      <div className="space-y-3 rounded-lg border p-4">
+      <div className="flex flex-col gap-3 rounded-lg border p-4">
         <div className="grid grid-cols-2 gap-4">
           <div>
             <p className="text-muted-foreground text-xs uppercase">Date</p>
@@ -156,13 +160,13 @@ export default function PlanDetailsPage() {
       </div>
 
       {plan.activities.length > 0 && (
-        <div className="space-y-2">
+        <div className="flex flex-col gap-2">
           <h2 className="text-lg font-semibold">Activities</h2>
           <div className="flex flex-wrap gap-2">
             {plan.activities.map((activity, i) => (
               <span
                 key={i}
-                className="rounded bg-gray-100 px-3 py-1 text-sm"
+                className="rounded bg-muted px-3 py-1 text-sm"
               >
                 {activity}
               </span>
@@ -171,7 +175,7 @@ export default function PlanDetailsPage() {
         </div>
       )}
 
-      <div className="space-y-2">
+      <div className="flex flex-col gap-2">
         <h2 className="text-lg font-semibold">
           Invitations
           <span className="text-muted-foreground ml-2 text-sm font-normal">
@@ -181,16 +185,16 @@ export default function PlanDetailsPage() {
         {plan.invitations.length === 0 ? (
           <p className="text-muted-foreground text-sm">No invitations sent.</p>
         ) : (
-          <div className="space-y-2">
+          <div className="flex flex-col gap-2">
             {plan.invitations.map((inv) => (
               <div
                 key={inv.id}
                 className="flex items-center justify-between rounded-lg border px-4 py-3"
               >
                 <div className="flex items-center gap-3">
-                  <div className="bg-muted flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium">
-                    {inv.invitedUser.name?.charAt(0) ?? "?"}
-                  </div>
+                  <Avatar className="size-8">
+                    <AvatarFallback>{inv.invitedUser.name?.charAt(0) ?? "?"}</AvatarFallback>
+                  </Avatar>
                   <div>
                     <p className="text-sm font-medium">
                       {inv.invitedUser.name}
@@ -202,17 +206,19 @@ export default function PlanDetailsPage() {
                     )}
                   </div>
                 </div>
-                <span
-                  className={`rounded px-2 py-0.5 text-xs font-medium ${
+                <Badge
+                  variant={
                     inv.status === "PENDING"
-                      ? "bg-yellow-100 text-yellow-700"
+                      ? "secondary"
                       : inv.status === "ACCEPTED"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-gray-100 text-gray-700"
-                  }`}
+                        ? "default"
+                        : "outline"
+                  }
+                  className="gap-1.5"
                 >
+                  <span className="size-1.5 rounded-full bg-current" />
                   {inv.status}
-                </span>
+                </Badge>
               </div>
             ))}
           </div>

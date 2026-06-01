@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 interface InvitationCardProps {
   id: string;
@@ -42,20 +43,16 @@ export function InvitationCard({
         <div className="flex items-center gap-2">
           <p className="text-sm font-medium">{planTitle}</p>
           {isCancelled && (
-            <span className="rounded bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700">
+            <Badge variant="destructive" className="gap-1.5">
+              <span className="size-1.5 rounded-full bg-current" />
               Cancelled
-            </span>
+            </Badge>
           )}
           {isResponded && (
-            <span
-              className={`rounded px-2 py-0.5 text-xs font-medium ${
-                invitationStatus === "ACCEPTED"
-                  ? "bg-green-100 text-green-700"
-                  : "bg-gray-100 text-gray-700"
-              }`}
-            >
+            <Badge variant={invitationStatus === "ACCEPTED" ? "default" : "outline"} className="gap-1.5">
+              <span className="size-1.5 rounded-full bg-current" />
               {invitationStatus === "ACCEPTED" ? "Accepted" : "Declined"}
-            </span>
+            </Badge>
           )}
         </div>
         <p className="text-muted-foreground mt-0.5 text-xs">

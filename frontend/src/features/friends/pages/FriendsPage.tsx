@@ -1,5 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   searchUsers,
   sendFriendRequest,
@@ -171,9 +174,9 @@ export default function FriendsPage() {
         className="flex items-center justify-between rounded-lg border px-4 py-3"
       >
         <div className="flex items-center gap-3">
-          <div className="bg-muted flex h-9 w-9 items-center justify-center rounded-full text-sm font-medium">
-            {user.name?.charAt(0) ?? "?"}
-          </div>
+          <Avatar className="size-9">
+            <AvatarFallback>{user.name?.charAt(0) ?? "?"}</AvatarFallback>
+          </Avatar>
           <div>
             <p className="text-sm font-medium">{user.name}</p>
             {user.username && (
@@ -187,7 +190,7 @@ export default function FriendsPage() {
   };
 
   return (
-    <div className="mx-auto max-w-2xl space-y-8 px-4 py-8">
+    <div className="mx-auto flex max-w-2xl flex-col gap-8 px-4 py-8">
       <div>
         <h1 className="text-2xl font-bold">Friends</h1>
         <p className="text-muted-foreground mt-1 text-sm">
@@ -195,22 +198,21 @@ export default function FriendsPage() {
         </p>
       </div>
 
-      <div className="space-y-3">
+      <div className="flex flex-col gap-3">
         <h2 className="text-lg font-semibold">Search Users</h2>
-        <input
+        <Input
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search by name or username..."
-          className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-9 w-full rounded-lg border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
         />
         {searching && (
-          <p className="text-muted-foreground text-sm">Searching...</p>
+          <Skeleton className="h-4 w-1/2" />
         )}
         {!searching && searchQuery.trim().length > 0 && searchResults.length === 0 && (
           <p className="text-muted-foreground text-sm">No users found.</p>
         )}
-        <div className="space-y-2">
+        <div className="flex flex-col gap-2">
           {searchResults.map(renderSearchResult)}
         </div>
       </div>
@@ -219,7 +221,7 @@ export default function FriendsPage() {
         <p className="text-destructive text-sm">{error}</p>
       )}
 
-      <div className="space-y-3">
+      <div className="flex flex-col gap-3">
         <h2 className="text-lg font-semibold">
           Received Requests
           {requests.length > 0 && (
@@ -229,20 +231,20 @@ export default function FriendsPage() {
           )}
         </h2>
         {loading ? (
-          <p className="text-muted-foreground text-sm">Loading...</p>
+          <Skeleton className="h-4 w-3/4" />
         ) : requests.length === 0 ? (
           <p className="text-muted-foreground text-sm">No pending requests.</p>
         ) : (
-          <div className="space-y-2">
+          <div className="flex flex-col gap-2">
             {requests.map((req) => (
               <div
                 key={req.id}
                 className="flex items-center justify-between rounded-lg border px-4 py-3"
               >
                 <div className="flex items-center gap-3">
-                  <div className="bg-muted flex h-9 w-9 items-center justify-center rounded-full text-sm font-medium">
-                    {req.sender.name?.charAt(0) ?? "?"}
-                  </div>
+                  <Avatar className="size-9">
+                    <AvatarFallback>{req.sender.name?.charAt(0) ?? "?"}</AvatarFallback>
+                  </Avatar>
                   <div>
                     <p className="text-sm font-medium">{req.sender.name}</p>
                     {req.sender.username && (
@@ -273,7 +275,7 @@ export default function FriendsPage() {
         )}
       </div>
 
-      <div className="space-y-3">
+      <div className="flex flex-col gap-3">
         <h2 className="text-lg font-semibold">
           My Friends
           {friends.length > 0 && (
@@ -283,21 +285,21 @@ export default function FriendsPage() {
           )}
         </h2>
         {loading ? (
-          <p className="text-muted-foreground text-sm">Loading...</p>
+          <Skeleton className="h-4 w-3/4" />
         ) : friends.length === 0 ? (
           <p className="text-muted-foreground text-sm">
             You have no friends yet.
           </p>
         ) : (
-          <div className="space-y-2">
+          <div className="flex flex-col gap-2">
             {friends.map((friend) => (
               <div
                 key={friend.id}
                 className="flex items-center gap-3 rounded-lg border px-4 py-3"
               >
-                <div className="bg-muted flex h-9 w-9 items-center justify-center rounded-full text-sm font-medium">
-                  {friend.name?.charAt(0) ?? "?"}
-                </div>
+                <Avatar className="size-9">
+                  <AvatarFallback>{friend.name?.charAt(0) ?? "?"}</AvatarFallback>
+                </Avatar>
                 <div>
                   <p className="text-sm font-medium">{friend.name}</p>
                   {friend.username && (

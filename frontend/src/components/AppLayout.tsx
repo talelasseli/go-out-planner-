@@ -16,9 +16,9 @@ export default function AppLayout() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="border-border flex items-center justify-between border-b px-6 py-4">
+      <header className="flex items-center justify-between border-b border-border bg-background px-6 py-4 shadow-sm">
         <Link to="/dashboard">
-          <h1 className="text-xl font-bold">Go Out Planner</h1>
+          <h1 className="text-xl font-bold text-primary">Go Out Planner</h1>
         </Link>
         <div className="flex items-center gap-4">
           <span className="text-muted-foreground text-sm">

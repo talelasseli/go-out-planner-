@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { authClient } from "@/lib/auth-client";
+import { Card, CardContent, CardTitle, CardDescription } from "@/components/ui/card";
 
 const links = [
   { to: "/friends", label: "Friends", desc: "Search users, manage friends" },
@@ -25,15 +26,15 @@ export default function DashboardPage() {
         </p>
       </div>
 
-      <div className="grid w-full grid-cols-1 gap-3 sm:grid-cols-2">
+      <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2">
         {links.map((link) => (
-          <Link
-            key={link.to}
-            to={link.to}
-            className="rounded-lg border p-4 transition-colors hover:bg-gray-50"
-          >
-            <h3 className="font-semibold">{link.label}</h3>
-            <p className="text-muted-foreground mt-1 text-sm">{link.desc}</p>
+          <Link key={link.to} to={link.to} className="group">
+            <Card className="border-l-2 border-l-primary transition-all duration-200 group-hover:-translate-y-0.5 group-hover:shadow-md">
+              <CardContent className="p-4">
+                <CardTitle>{link.label}</CardTitle>
+                <CardDescription>{link.desc}</CardDescription>
+              </CardContent>
+            </Card>
           </Link>
         ))}
       </div>
