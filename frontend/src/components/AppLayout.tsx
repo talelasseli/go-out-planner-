@@ -13,6 +13,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Menu, LogOut } from "lucide-react";
 import { SideSheetNav } from "./SideSheetNav";
+import ThemeToggle from "./ThemeToggle";
 
 export default function AppLayout() {
   const navigate = useNavigate();
@@ -53,34 +54,37 @@ export default function AppLayout() {
           </Link>
         </div>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={<Button variant="ghost" size="icon" className="rounded-full" aria-label="User menu" />}
-          >
-            <Avatar className="size-8">
-              <AvatarFallback>
-                {session?.user.name?.charAt(0) ?? "?"}
-              </AvatarFallback>
-            </Avatar>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <div className="flex items-center gap-2 px-2 py-1.5">
-              <div className="flex flex-col">
-                <span className="text-sm font-medium">
-                  {session?.user.name}
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  {session?.user.email}
-                </span>
+        <div className="flex items-center gap-1">
+          <ThemeToggle />
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={<Button variant="ghost" size="icon" className="rounded-full" aria-label="User menu" />}
+            >
+              <Avatar className="size-8">
+                <AvatarFallback>
+                  {session?.user.name?.charAt(0) ?? "?"}
+                </AvatarFallback>
+              </Avatar>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <div className="flex items-center gap-2 px-2 py-1.5">
+                <div className="flex flex-col">
+                  <span className="text-sm font-medium">
+                    {session?.user.name}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    {session?.user.email}
+                  </span>
+                </div>
               </div>
-            </div>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleSignOut} className="gap-2 text-muted-foreground">
-              <LogOut className="size-4" />
-              Sign out
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleSignOut} className="gap-2 text-muted-foreground">
+                <LogOut className="size-4" />
+                Sign out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </header>
 
       <main className="flex min-h-0 flex-1 flex-col animate-in fade-in duration-200">
