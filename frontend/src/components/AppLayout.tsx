@@ -36,6 +36,9 @@ export default function AppLayout() {
           <Link to="/plans/invited">
             <Button variant="ghost">Invited</Button>
           </Link>
+          <Link to="/map">
+            <Button variant="ghost">Map</Button>
+          </Link>
           <Link to="/invitations">
             <Button variant="ghost">Invitations</Button>
           </Link>
@@ -44,7 +47,7 @@ export default function AppLayout() {
           </Button>
         </div>
       </header>
-      <main className="flex flex-1 flex-col">
+      <main className="flex min-h-0 flex-1 flex-col">
         <Outlet />
       </main>
     </div>

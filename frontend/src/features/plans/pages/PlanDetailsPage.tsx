@@ -156,6 +156,14 @@ export default function PlanDetailsPage() {
             <p className="text-muted-foreground text-xs uppercase">Place</p>
             <p className="text-sm font-medium">{plan.place}</p>
           </div>
+          {plan.latitude != null && plan.longitude != null && (
+            <div className="col-span-2">
+              <p className="text-muted-foreground text-xs uppercase">Coordinates</p>
+              <p className="text-sm font-medium">
+                {plan.latitude.toFixed(6)}, {plan.longitude.toFixed(6)}
+              </p>
+            </div>
+          )}
         </div>
       </div>
 

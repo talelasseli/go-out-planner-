@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { createPlan } from "@/features/plans/api/plans";
+import MapPicker from "@/components/MapPicker";
 import { getFriends, type FriendItem } from "@/features/friends/api/friends";
 
 export default function CreatePlanPage() {
@@ -12,6 +13,8 @@ export default function CreatePlanPage() {
   const [title, setTitle] = useState("");
   const [scheduledAt, setScheduledAt] = useState("");
   const [place, setPlace] = useState("");
+  const [latitude, setLatitude] = useState<number | null>(null);
+  const [longitude, setLongitude] = useState<number | null>(null);
   const [activities, setActivities] = useState<string[]>([""]);
   const [selectedFriends, setSelectedFriends] = useState<string[]>([]);
   const [friends, setFriends] = useState<FriendItem[]>([]);
@@ -100,6 +103,7 @@ export default function CreatePlanPage() {
         title: title.trim(),
         scheduledAt: new Date(scheduledAt).toISOString(),
         place: place.trim(),
+        ...(latitude != null && longitude != null ? { latitude, longitude } : {}),
         activities: activities.filter((a) => a.trim().length > 0).map((a) => a.trim()),
         invitedUserIds: selectedFriends,
       });
@@ -163,6 +167,31 @@ export default function CreatePlanPage() {
           />
           {fieldErrors.place && (
             <p className="text-destructive text-xs">{fieldErrors.place}</p>
+          )}
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <label className="text-sm font-medium">Pick Location on Map</label>
+          <MapPicker
+            latitude={latitude}
+            longitude={longitude}
+            onPick={(lat, lng) => {
+              setLatitude(lat);
+              setLongitude(lng);
+            }}
+          />
+          {latitude != null && longitude != null && (
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <span>Lat: {latitude.toFixed(4)}</span>
+              <span>Lng: {longitude.toFixed(4)}</span>
+              <button
+                type="button"
+                onClick={() => { setLatitude(null); setLongitude(null); }}
+                className="ml-auto text-destructive hover:underline"
+              >
+                Remove pin
+              </button>
+            </div>
           )}
         </div>
 

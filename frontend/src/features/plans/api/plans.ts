@@ -4,6 +4,8 @@ export interface CreatePlanInput {
   title: string;
   scheduledAt: string;
   place: string;
+  latitude?: number;
+  longitude?: number;
   activities: string[];
   invitedUserIds: string[];
 }
@@ -13,6 +15,8 @@ export interface PlanSummary {
   title: string;
   scheduledAt: string;
   place: string;
+  latitude?: number | null;
+  longitude?: number | null;
   status: "ACTIVE" | "CANCELLED";
   createdAt: string;
 }
@@ -26,6 +30,8 @@ export interface PlanDetail {
   title: string;
   scheduledAt: string;
   place: string;
+  latitude?: number | null;
+  longitude?: number | null;
   status: "ACTIVE" | "CANCELLED";
   createdAt: string;
   updatedAt: string;
