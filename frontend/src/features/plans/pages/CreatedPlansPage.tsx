@@ -1,12 +1,17 @@
 import { useState, useEffect } from "react";
 import { PlanCard } from "@/components/PlanCard";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { getCreatedPlans, cancelPlan, deletePlan, type PlanSummary } from "@/features/plans/api/plans";
+
+type ConfirmAction = { type: "cancel" | "delete"; planId: string } | null;
 
 export default function CreatedPlansPage() {
   const [plans, setPlans] = useState<PlanSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [confirm, setConfirm] = useState<ConfirmAction>(null);
+  const [confirmLoading, setConfirmLoading] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -30,24 +35,34 @@ export default function CreatedPlansPage() {
   }, []);
 
   async function handleCancel(planId: string) {
-    if (!window.confirm("Are you sure you want to cancel this plan?")) return;
-    try {
-      await cancelPlan(planId);
-      setPlans((prev) =>
-        prev.map((p) => (p.id === planId ? { ...p, status: "CANCELLED" as const } : p)),
-      );
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to cancel plan");
-    }
+    setConfirm({ type: "cancel", planId });
   }
 
   async function handleDelete(planId: string) {
-    if (!window.confirm("Are you sure you want to delete this plan? This cannot be undone.")) return;
+    setConfirm({ type: "delete", planId });
+  }
+
+  async function executeConfirm() {
+    if (!confirm) return;
+    setConfirmLoading(true);
+
     try {
-      await deletePlan(planId);
-      setPlans((prev) => prev.filter((p) => p.id !== planId));
+      if (confirm.type === "cancel") {
+        await cancelPlan(confirm.planId);
+        setPlans((prev) =>
+          prev.map((p) =>
+            p.id === confirm.planId ? { ...p, status: "CANCELLED" as const } : p,
+          ),
+        );
+      } else {
+        await deletePlan(confirm.planId);
+        setPlans((prev) => prev.filter((p) => p.id !== confirm.planId));
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to delete plan");
+      setError(err instanceof Error ? err.message : "Failed to cancel plan");
+    } finally {
+      setConfirmLoading(false);
+      setConfirm(null);
     }
   }
 
@@ -67,7 +82,7 @@ export default function CreatedPlansPage() {
       ) : plans.length === 0 ? (
         <p className="text-muted-foreground text-sm">You haven't created any plans yet.</p>
       ) : (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-3">
           {plans.map((plan) => (
             <PlanCard
               key={plan.id}
@@ -79,6 +94,23 @@ export default function CreatedPlansPage() {
           ))}
         </div>
       )}
+
+      <ConfirmDialog
+        open={confirm !== null}
+        onOpenChange={(open) => { if (!open) setConfirm(null); }}
+        title={
+          confirm?.type === "cancel" ? "Cancel plan?" : "Delete plan?"
+        }
+        description={
+          confirm?.type === "cancel"
+            ? "Are you sure you want to cancel this plan?"
+            : "Are you sure you want to delete this plan? This cannot be undone."
+        }
+        confirmLabel={confirm?.type === "cancel" ? "Cancel plan" : "Delete plan"}
+        destructive={confirm?.type === "delete"}
+        loading={confirmLoading}
+        onConfirm={executeConfirm}
+      />
     </div>
   );
 }
