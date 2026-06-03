@@ -38,9 +38,7 @@ export default function MapPage() {
   if (loading) {
     return (
       <div className="flex min-h-0 flex-1 flex-col">
-        <div className="shrink-0 px-4 py-4">
-          <h1 className="text-center text-2xl font-bold">Map</h1>
-        </div>
+    
         <div className="flex min-h-0 flex-1">
           <Skeleton className="flex-1 rounded-none" />
         </div>
@@ -51,7 +49,7 @@ export default function MapPage() {
   if (plans.length === 0) {
     return (
       <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-4 px-4">
-        <h1 className="text-2xl font-bold">Map</h1>
+        
         <p className="text-muted-foreground">
           No plans on the map yet. Create a plan and drop a pin to see it here.
         </p>
@@ -64,9 +62,7 @@ export default function MapPage() {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="shrink-0 px-4 py-4">
-        <h1 className="text-center text-2xl font-bold">Map</h1>
-      </div>
+      
       <div className="flex flex-1 min-h-0">
         <MapView plans={plans} />
       </div>

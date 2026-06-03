@@ -5,6 +5,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 interface PlanPin {
   id: string;
   title: string;
+  place: string;
   latitude: number;
   longitude: number;
   status: string;
@@ -70,35 +71,74 @@ export default function MapView({ plans }: MapViewProps) {
         color +
         ";border:3px solid #fff;border-radius:50%;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.3);";
 
-      const popup = new maplibregl.Popup({ offset: 35 });
+      const popup = new maplibregl.Popup({ offset: 35, className: "plan-map-popup-shell" });
       const container = document.createElement("div");
-      container.style.cssText =
-        "display:flex;flex-direction:column;gap:6px;font-size:16px;";
+      container.className = "plan-map-popup-card";
 
-      const title = document.createElement("strong");
-      title.textContent = plan.title;
-      container.appendChild(title);
+      const header = document.createElement("div");
+      header.className = "plan-map-popup-header";
 
-      const status = document.createElement("span");
-      status.textContent = plan.status;
-      status.style.cssText = "font-size:14px;color:#666;";
-      container.appendChild(status);
+      const titleEl = document.createElement("span");
+      titleEl.className = "plan-map-popup-title";
+      titleEl.textContent = plan.title;
+      header.appendChild(titleEl);
 
-      const date = document.createElement("span");
-      date.textContent = new Date(plan.scheduledAt).toLocaleDateString("en-US", {
+      const statusClass = plan.status === "ACTIVE" ? "active" : "cancelled";
+      const badge = document.createElement("span");
+      badge.className = "plan-map-popup-badge " + statusClass;
+      badge.textContent = plan.status;
+      header.appendChild(badge);
+
+      container.appendChild(header);
+
+      const body = document.createElement("div");
+      body.className = "plan-map-popup-body";
+
+      const placeRow = document.createElement("div");
+      placeRow.className = "plan-map-popup-row";
+      const placeIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      placeIcon.setAttribute("viewBox", "0 0 24 24");
+      placeIcon.setAttribute("fill", "none");
+      placeIcon.setAttribute("stroke", "currentColor");
+      placeIcon.setAttribute("stroke-width", "2");
+      placeIcon.setAttribute("stroke-linecap", "round");
+      placeIcon.setAttribute("stroke-linejoin", "round");
+      placeIcon.classList.add("plan-map-popup-icon");
+      placeIcon.innerHTML = '<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>';
+      placeRow.appendChild(placeIcon);
+      const placeText = document.createElement("span");
+      placeText.textContent = plan.place;
+      placeRow.appendChild(placeText);
+      body.appendChild(placeRow);
+
+      const dateRow = document.createElement("div");
+      dateRow.className = "plan-map-popup-row";
+      const calIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      calIcon.setAttribute("viewBox", "0 0 24 24");
+      calIcon.setAttribute("fill", "none");
+      calIcon.setAttribute("stroke", "currentColor");
+      calIcon.setAttribute("stroke-width", "2");
+      calIcon.setAttribute("stroke-linecap", "round");
+      calIcon.setAttribute("stroke-linejoin", "round");
+      calIcon.classList.add("plan-map-popup-icon");
+      calIcon.innerHTML = '<rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/>';
+      dateRow.appendChild(calIcon);
+      const dateText = document.createElement("span");
+      dateText.textContent = new Date(plan.scheduledAt).toLocaleDateString("en-US", {
         weekday: "short",
         month: "short",
         day: "numeric",
         year: "numeric",
       });
-      date.style.cssText = "font-size:14px;color:#666;";
-      container.appendChild(date);
+      dateRow.appendChild(dateText);
+      body.appendChild(dateRow);
+
+      container.appendChild(body);
 
       const link = document.createElement("a");
-      link.href = `/plans/${plan.id}`;
-      link.textContent = "View details";
-      link.style.cssText =
-        "font-size:14px;color:#0066cc;text-decoration:underline;margin-top:2px;";
+      link.className = "plan-map-popup-link";
+      link.href = "/plans/" + plan.id;
+      link.textContent = "View details \u2192";
       container.appendChild(link);
 
       popup.setDOMContent(container);
