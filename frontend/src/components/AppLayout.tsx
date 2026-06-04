@@ -33,16 +33,16 @@ export default function AppLayout() {
     <div className="flex min-h-screen flex-col bg-background">
       <header className="flex h-14 items-center justify-between border-b border-border bg-background px-4 lg:px-6">
         <div className="flex items-center gap-3">
-          <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+          <Sheet open={sheetOpen} onOpenChange={setSheetOpen} disablePointerDismissal={true} modal={false}>
             <SheetTrigger render={<Button variant="ghost" size="icon" aria-label="Open navigation menu" />}>
               <Menu className="size-5" />
             </SheetTrigger>
-            <SheetContent side="left" className="w-72 p-0">
+            <SheetContent side="left" className="!w-76 p-0">
               <SheetTitle className="sr-only">Navigation menu</SheetTitle>
               <SideSheetNav
                 userName={session?.user.name}
                 userEmail={session?.user.email}
-                onLinkClick={() => setSheetOpen(false)}
+                onLinkClick={() => {}}
                 onSignOut={handleSignOut}
               />
             </SheetContent>

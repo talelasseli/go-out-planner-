@@ -393,9 +393,9 @@ export default function PlanDetailsPage() {
                               ? "secondary"
                               : "outline"
                         }
-                        className="gap-1.5"
+                        className="gap-1"
                       >
-                        <span className="size-1.5 rounded-full bg-current" />
+                        <span className="size-1,5 rounded-full bg-current" />
                         {inv.status}
                       </Badge>
                     </div>
