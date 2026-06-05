@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const searchUsersSchema = z.object({
-  query: z.string().trim().min(2),
+  query: z.string().trim().min(2).max(50),
 }).strict();
 
 export const sendFriendRequestSchema = z.object({

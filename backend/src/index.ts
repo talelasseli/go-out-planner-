@@ -1,7 +1,14 @@
+import { env } from "./shared/env.js";
 import app from "./app.js";
 
-const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 4000;
+process.on("unhandledRejection", (reason) => {
+  console.error("UNHANDLED REJECTION:", reason);
+});
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+process.on("uncaughtException", (err) => {
+  console.error("UNCAUGHT EXCEPTION:", err);
+});
+
+app.listen(env.PORT, () => {
+  console.log(`Server running on port ${env.PORT}`);
 });

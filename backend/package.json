@@ -11,6 +11,8 @@
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
@@ -18,7 +20,10 @@
     "@prisma/client": "^6.0.0",
     "better-auth": "^1.6.0",
     "cors": "^2.8.5",
+    "dotenv": "^17.4.2",
     "express": "^5.0.0",
+    "express-rate-limit": "^8.5.2",
+    "helmet": "^8.2.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {
@@ -26,12 +31,15 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.0",
     "@types/node": "^22.0.0",
+    "@types/supertest": "^7.2.0",
     "eslint": "^10.4.1",
     "globals": "^17.6.0",
     "nodemon": "^3.0.0",
     "prisma": "^6.0.0",
+    "supertest": "^7.2.2",
     "tsx": "^4.0.0",
     "typescript": "^5.7.0",
-    "typescript-eslint": "^8.60.0"
+    "typescript-eslint": "^8.60.0",
+    "vitest": "^4.1.8"
   }
 }

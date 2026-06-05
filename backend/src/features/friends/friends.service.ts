@@ -9,7 +9,6 @@ export async function searchUsers(query: string, userId: string): Promise<UserWi
       OR: [
         { name: { contains: query, mode: "insensitive" } },
         { username: { contains: query, mode: "insensitive" } },
-        { email: { contains: query, mode: "insensitive" } },
       ],
     },
     select: {
