@@ -4,6 +4,7 @@ import cors from "cors";
 import { toNodeHandler } from "better-auth/node";
 import { errorHandler } from "./shared/errors.js";
 import { authLimiter, generalLimiter } from "./shared/rate-limit.js";
+import { requireSafeOrigin } from "./shared/middleware/origin-check.js";
 import authRoutes from "./features/auth/auth.routes.js";
 import friendsRoutes from "./features/friends/friends.routes.js";
 import plansRoutes from "./features/plans/plans.routes.js";
@@ -49,6 +50,7 @@ app.all("/api/auth/{*any}", async (req, res, next) => {
 });
 
 app.use("/api", generalLimiter);
+app.use("/api", requireSafeOrigin);
 
 app.use(express.json());
 

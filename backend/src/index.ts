@@ -1,12 +1,13 @@
 import { env } from "./shared/env.js";
 import app from "./app.js";
+import { safeError } from "./shared/logger.js";
 
 process.on("unhandledRejection", (reason) => {
-  console.error("UNHANDLED REJECTION:", reason);
+  safeError(reason, { source: "unhandledRejection" });
 });
 
 process.on("uncaughtException", (err) => {
-  console.error("UNCAUGHT EXCEPTION:", err);
+  safeError(err, { source: "uncaughtException" });
 });
 
 app.listen(env.PORT, () => {

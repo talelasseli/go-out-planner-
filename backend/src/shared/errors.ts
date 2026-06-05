@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { ZodError } from "zod";
+import { safeError } from "./logger.js";
 
 export class AppError extends Error {
   constructor(
@@ -13,7 +14,7 @@ export class AppError extends Error {
 
 export function errorHandler(
   err: Error,
-  _req: Request,
+  req: Request,
   res: Response,
   _next: NextFunction
 ) {
@@ -37,7 +38,7 @@ export function errorHandler(
     return;
   }
 
-  console.error(err);
+  safeError(err, { route: req.originalUrl, method: req.method });
   res.status(500).json({
     success: false,
     message: "Internal server error",

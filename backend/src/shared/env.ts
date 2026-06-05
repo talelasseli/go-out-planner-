@@ -35,11 +35,10 @@ function parseOriginList(value: string): string[] {
       );
     }
     try {
-      new URL(trimmed);
+      origins.push(new URL(trimmed).origin);
     } catch {
       throw new Error(`Invalid origin URL: "${trimmed}"`);
     }
-    origins.push(trimmed);
   }
 
   if (origins.length === 0) {
@@ -52,6 +51,9 @@ function parseOriginList(value: string): string[] {
 export function validate(input: Record<string, string | undefined>) {
   const raw = envSchema.parse(input);
 
+  const corsOriginList = parseOriginList(raw.CORS_ORIGIN);
+  const trustedOriginList = parseOriginList(raw.TRUSTED_ORIGINS);
+
   if (raw.NODE_ENV === "production") {
     const localhost = /localhost/i;
     if (localhost.test(raw.BETTER_AUTH_URL)) {
@@ -63,10 +65,21 @@ export function validate(input: Record<string, string | undefined>) {
     if (localhost.test(raw.TRUSTED_ORIGINS)) {
       throw new Error("TRUSTED_ORIGINS must not use localhost in production");
     }
-  }
 
-  const corsOriginList = parseOriginList(raw.CORS_ORIGIN);
-  const trustedOriginList = parseOriginList(raw.TRUSTED_ORIGINS);
+    if (!raw.BETTER_AUTH_URL.startsWith("https://")) {
+      throw new Error("BETTER_AUTH_URL must use HTTPS in production");
+    }
+    for (const origin of corsOriginList) {
+      if (!origin.startsWith("https://")) {
+        throw new Error("CORS_ORIGIN values must use HTTPS in production");
+      }
+    }
+    for (const origin of trustedOriginList) {
+      if (!origin.startsWith("https://")) {
+        throw new Error("TRUSTED_ORIGINS values must use HTTPS in production");
+      }
+    }
+  }
 
   return { ...raw, corsOriginList, trustedOriginList };
 }

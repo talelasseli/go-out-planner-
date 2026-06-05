@@ -105,6 +105,33 @@ describe("production environment guard", () => {
       validate({ ...validProd, TRUSTED_ORIGINS: "http://localhost:5173" })
     ).toThrow(/TRUSTED_ORIGINS/);
   });
+
+  it("rejects http BETTER_AUTH_URL in production", () => {
+    expect(() =>
+      validate({ ...validProd, BETTER_AUTH_URL: "http://api.myapp.com" })
+    ).toThrow(/HTTPS/);
+  });
+
+  it("rejects http CORS_ORIGIN in production", () => {
+    expect(() =>
+      validate({ ...validProd, CORS_ORIGIN: "http://myapp.com" })
+    ).toThrow(/HTTPS/);
+  });
+
+  it("rejects http TRUSTED_ORIGINS in production", () => {
+    expect(() =>
+      validate({ ...validProd, TRUSTED_ORIGINS: "http://myapp.com" })
+    ).toThrow(/HTTPS/);
+  });
+
+  it("rejects http origin in comma-separated CORS_ORIGIN in production", () => {
+    expect(() =>
+      validate({
+        ...validProd,
+        CORS_ORIGIN: "https://myapp.com,http://other.com",
+      })
+    ).toThrow(/HTTPS/);
+  });
 });
 
 describe("origin list parsing", () => {
@@ -184,6 +211,26 @@ describe("origin list parsing", () => {
     expect(() =>
       validate({ ...base, CORS_ORIGIN: "https://a.com, ,https://b.com" })
     ).toThrow(/Empty origin/);
+  });
+
+  it("normalizes trailing slash in origin", () => {
+    const result = validate({
+      ...base,
+      CORS_ORIGIN: "https://example.com/",
+      TRUSTED_ORIGINS: "https://example.com/",
+    });
+    expect(result.corsOriginList).toEqual(["https://example.com"]);
+    expect(result.trustedOriginList).toEqual(["https://example.com"]);
+  });
+
+  it("normalizes origin with path suffix", () => {
+    const result = validate({
+      ...base,
+      CORS_ORIGIN: "https://example.com/some/path",
+      TRUSTED_ORIGINS: "https://example.com:3000/ignored",
+    });
+    expect(result.corsOriginList).toEqual(["https://example.com"]);
+    expect(result.trustedOriginList).toEqual(["https://example.com:3000"]);
   });
 });
 
