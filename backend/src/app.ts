@@ -58,6 +58,10 @@ app.use("/api", friendsRoutes);
 app.use("/api", plansRoutes);
 app.use("/api", invitationsRoutes);
 
+app.get("/health", (_req, res) => {
+  res.json({ status: "ok" });
+});
+
 app.use((_req, res) => {
   res.status(404).json({ success: false, message: "Not found" });
 });
