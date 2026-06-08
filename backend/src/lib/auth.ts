@@ -22,6 +22,13 @@ export const auth = betterAuth({
       clientSecret: env.GOOGLE_CLIENT_SECRET,
     },
   },
+  account: {
+    // Required because OAuth is initiated from Vercel frontend
+    // while Better Auth runs on Render backend.
+    // DB state verification remains enabled; this only skips the
+    // secondary signed state cookie check that fails cross-domain.
+    skipStateCookieCheck: true,
+  },
   advanced: {
     useSecureCookies: env.NODE_ENV === "production",
   },
