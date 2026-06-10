@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -437,6 +437,10 @@ export default function CreatePlanPage() {
                           onCheckedChange={() => toggleFriend(friend.id)}
                         />
                         <Avatar className="size-7">
+                          <AvatarImage
+                            src={friend.image ?? undefined}
+                            alt={friend.name ?? "Friend avatar"}
+                          />
                           <AvatarFallback className="text-xs">
                             {friend.name?.charAt(0) ?? "?"}
                           </AvatarFallback>

@@ -123,7 +123,7 @@ export async function getPlanById(planId: string, userId: string) {
       updatedAt: true,
       creatorId: true,
       creator: {
-        select: { id: true, name: true, username: true },
+        select: { id: true, name: true, username: true, image: true },
       },
       activities: {
         select: { activityName: true },
@@ -134,7 +134,7 @@ export async function getPlanById(planId: string, userId: string) {
           id: true,
           status: true,
           invitedUser: {
-            select: { id: true, name: true, username: true },
+            select: { id: true, name: true, username: true, image: true },
           },
         },
       },

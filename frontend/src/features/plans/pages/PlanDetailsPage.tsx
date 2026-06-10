@@ -9,7 +9,7 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/Spinner";
 import { EmptyState } from "@/components/EmptyState";
@@ -370,6 +370,10 @@ export default function PlanDetailsPage() {
                     >
                       <div className="flex items-center gap-3">
                         <Avatar className="size-8">
+                          <AvatarImage
+                            src={inv.invitedUser.image ?? undefined}
+                            alt={inv.invitedUser.name ?? "User avatar"}
+                          />
                           <AvatarFallback>
                             {inv.invitedUser.name?.charAt(0) ?? "?"}
                           </AvatarFallback>
@@ -395,7 +399,6 @@ export default function PlanDetailsPage() {
                         }
                         className="gap-1"
                       >
-                        <span className="size-1,5 rounded-full bg-current" />
                         {inv.status}
                       </Badge>
                     </div>

@@ -18,6 +18,13 @@ const envSchema = z.object({
   GOOGLE_CLIENT_SECRET: z.string().min(1),
   CORS_ORIGIN: z.string().min(1),
   TRUSTED_ORIGINS: z.string().min(1),
+  STORAGE_ENDPOINT: z.string().url().optional(),
+  STORAGE_REGION: z.string().default("auto"),
+  STORAGE_BUCKET: z.string().min(1).optional(),
+  STORAGE_ACCESS_KEY_ID: z.string().min(1).optional(),
+  STORAGE_SECRET_ACCESS_KEY: z.string().min(1).optional(),
+  STORAGE_PUBLIC_URL: z.string().url().optional(),
+  STORAGE_UPLOAD_URL_EXPIRY: z.coerce.number().int().positive().default(300),
 });
 
 function parseOriginList(value: string): string[] {
@@ -49,10 +56,18 @@ function parseOriginList(value: string): string[] {
 }
 
 export function validate(input: Record<string, string | undefined>) {
-  const raw = envSchema.parse(input);
+  const normalized: Record<string, string | undefined> = {};
+  for (const [k, v] of Object.entries(input)) {
+    normalized[k] = v === "" ? undefined : v;
+  }
+  const raw = envSchema.parse(normalized);
 
   const corsOriginList = parseOriginList(raw.CORS_ORIGIN);
   const trustedOriginList = parseOriginList(raw.TRUSTED_ORIGINS);
+
+  if (raw.STORAGE_ENDPOINT && !raw.STORAGE_BUCKET) {
+    throw new Error("STORAGE_BUCKET is required when STORAGE_ENDPOINT is set");
+  }
 
   if (raw.NODE_ENV === "production") {
     const localhost = /localhost/i;

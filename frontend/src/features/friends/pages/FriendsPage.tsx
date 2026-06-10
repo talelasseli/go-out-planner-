@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -213,6 +213,10 @@ export default function FriendsPage() {
       >
         <div className="flex items-center gap-3">
           <Avatar className="size-9">
+            <AvatarImage
+              src={user.image ?? undefined}
+              alt={user.name ?? "User avatar"}
+            />
             <AvatarFallback>
               {user.name?.charAt(0) ?? "?"}
             </AvatarFallback>
@@ -311,6 +315,10 @@ export default function FriendsPage() {
                 className="flex items-center gap-3 rounded-lg border px-4 py-3"
               >
                 <Avatar className="size-9">
+                  <AvatarImage
+                    src={friend.image ?? undefined}
+                    alt={friend.name ?? "Friend avatar"}
+                  />
                   <AvatarFallback>
                     {friend.name?.charAt(0) ?? "?"}
                   </AvatarFallback>
@@ -348,6 +356,10 @@ export default function FriendsPage() {
               >
                 <div className="flex items-center gap-3">
                   <Avatar className="size-9">
+                    <AvatarImage
+                      src={req.sender.image ?? undefined}
+                      alt={req.sender.name ?? "User avatar"}
+                    />
                     <AvatarFallback>
                       {req.sender.name?.charAt(0) ?? "?"}
                     </AvatarFallback>

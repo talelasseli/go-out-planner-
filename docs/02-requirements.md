@@ -86,65 +86,52 @@
 
 ### Register
 
-| Field | Rule |
-|---|---|
-| name | Required, 2–100 characters |
+| Field    | Rule                              |
+| -------- | --------------------------------- |
+| name     | Required, 2–100 characters        |
 | username | Required, 3–50 characters, unique |
-| email | Required, valid email, unique |
-| password | Required, minimum 8 characters |
+| email    | Required, valid email, unique     |
+| password | Required, minimum 8 characters    |
 
 ### Search Users
 
-| Field | Rule |
-|---|---|
+| Field | Rule                           |
+| ----- | ------------------------------ |
 | query | Required, minimum 2 characters |
 
 ### Friend Request
 
-| Field | Rule |
-|---|---|
-| receiverId | Required |
-| receiverId | Must belong to an existing user |
-| receiverId | Cannot be the current user |
-| receiverId | Cannot already be a friend |
+| Field      | Rule                                  |
+| ---------- | ------------------------------------- |
+| receiverId | Required                              |
+| receiverId | Must belong to an existing user       |
+| receiverId | Cannot be the current user            |
+| receiverId | Cannot already be a friend            |
 | receiverId | Cannot already have a pending request |
 
 ### Create Plan
 
-| Field | Rule |
-|---|---|
-| title | Required, 3–150 characters |
-| date | Required, valid date, not in the past |
-| time | Required, valid time |
-| place | Required, 2–255 characters |
-| activities | Required, at least 1 activity |
-| invitedUserIds | Required, at least 1 user |
-| invitedUserIds | Users must exist |
-| invitedUserIds | Users must be friends with creator |
-| invitedUserIds | Cannot contain duplicates |
-| invitedUserIds | Cannot contain creator ID |
+| Field          | Rule                                  |
+| -------------- | ------------------------------------- |
+| title          | Required, 3–150 characters            |
+| date           | Required, valid date, not in the past |
+| time           | Required, valid time                  |
+| place          | Required, 2–255 characters            |
+| activities     | Required, at least 1 activity         |
+| invitedUserIds | Required, at least 1 user             |
+| invitedUserIds | Users must exist                      |
+| invitedUserIds | Users must be friends with creator    |
+| invitedUserIds | Cannot contain duplicates             |
+| invitedUserIds | Cannot contain creator ID             |
 
 ### Invitation Response
 
-| Field | Rule |
-|---|---|
-| invitationId | Required |
-| invitationId | Must belong to an existing invitation |
-| invitation status | Must be pending |
-| current user | Must be the invited user |
-
-## Non-Functional Requirements
-
-| ID | Requirement |
-|---|---|
-| MVP-NFR1 | Security |
-| MVP-NFR2 | Authentication |
-| MVP-NFR3 | Authorization |
-| MVP-NFR4 | Simplicity |
-| MVP-NFR5 | Mobile-friendly design |
-| MVP-NFR6 | Basic performance |
-| MVP-NFR7 | Data validation |
-| MVP-NFR8 | No duplicates |
+| Field             | Rule                                  |
+| ----------------- | ------------------------------------- |
+| invitationId      | Required                              |
+| invitationId      | Must belong to an existing invitation |
+| invitation status | Must be pending                       |
+| current user      | Must be the invited user              |
 
 ## Security Requirements
 

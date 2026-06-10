@@ -9,9 +9,9 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Menu, LogOut } from "lucide-react";
+import { Menu, Settings, LogOut } from "lucide-react";
 import { SideSheetNav } from "./SideSheetNav";
 import ThemeToggle from "./ThemeToggle";
 
@@ -42,6 +42,7 @@ export default function AppLayout() {
               <SideSheetNav
                 userName={session?.user.name}
                 userEmail={session?.user.email}
+                userImage={session?.user.image}
                 onLinkClick={() => {}}
                 onSignOut={handleSignOut}
               />
@@ -61,6 +62,10 @@ export default function AppLayout() {
               render={<Button variant="ghost" size="icon" className="rounded-full" aria-label="User menu" />}
             >
               <Avatar className="size-8">
+                <AvatarImage
+                  src={session?.user.image ?? undefined}
+                  alt={session?.user.name ?? "User avatar"}
+                />
                 <AvatarFallback>
                   {session?.user.name?.charAt(0) ?? "?"}
                 </AvatarFallback>
@@ -77,6 +82,11 @@ export default function AppLayout() {
                   </span>
                 </div>
               </div>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => navigate("/settings")} className="gap-2 text-muted-foreground">
+                <Settings className="size-4" />
+                Settings
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleSignOut} className="gap-2 text-muted-foreground">
                 <LogOut className="size-4" />

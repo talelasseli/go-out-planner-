@@ -11,6 +11,7 @@ import InvitedPlansPage from "@/features/plans/pages/InvitedPlansPage";
 import PlanDetailsPage from "@/features/plans/pages/PlanDetailsPage";
 import InvitationsPage from "@/features/invitations/pages/InvitationsPage";
 import MapPage from "@/features/map/pages/MapPage";
+import SettingsPage from "@/features/profile/pages/SettingsPage";
 
 export default function AppRoutes() {
   return (
@@ -27,6 +28,7 @@ export default function AppRoutes() {
           <Route path="/plans/:planId" element={<PlanDetailsPage />} />
           <Route path="/map" element={<MapPage />} />
           <Route path="/invitations" element={<InvitationsPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
         </Route>
       </Route>
       <Route path="*" element={<Navigate to="/dashboard" replace />} />

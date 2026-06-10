@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
@@ -10,6 +10,7 @@ import {
   UserPlus,
   Map,
   Mail,
+  Settings,
   LogOut,
 } from "lucide-react";
 
@@ -21,11 +22,13 @@ const navLinks = [
   { to: "/plans/invited", label: "Invited Plans", icon: UserPlus },
   { to: "/map", label: "Map", icon: Map },
   { to: "/invitations", label: "Invitations", icon: Mail },
+  { to: "/settings", label: "Settings", icon: Settings },
 ];
 
 interface SideSheetNavProps {
   userName?: string;
   userEmail?: string;
+  userImage?: string | null;
   onLinkClick: () => void;
   onSignOut: () => void;
 }
@@ -33,6 +36,7 @@ interface SideSheetNavProps {
 export function SideSheetNav({
   userName,
   userEmail,
+  userImage,
   onLinkClick,
   onSignOut,
 }: SideSheetNavProps) {
@@ -40,6 +44,10 @@ export function SideSheetNav({
     <div className="flex h-full flex-col">
       <div className="flex items-center gap-3 border-b border-border px-4 py-5">
         <Avatar className="size-10">
+          <AvatarImage
+            src={userImage ?? undefined}
+            alt={userName ?? "User avatar"}
+          />
           <AvatarFallback>{userName?.charAt(0) ?? "?"}</AvatarFallback>
         </Avatar>
         <div className="flex min-w-0 flex-col">

@@ -32,6 +32,8 @@ model User {
   image         String?
   username        String?   @unique
   displayUsername String?
+  bio             String?
+  location        Json?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 

@@ -35,12 +35,12 @@ export interface PlanDetail {
   status: "ACTIVE" | "CANCELLED";
   createdAt: string;
   updatedAt: string;
-  creator: { id: string; name: string | null; username: string | null };
+  creator: { id: string; name: string | null; username: string | null; image: string | null };
   activities: string[];
   invitations: Array<{
     id: string;
     status: "PENDING" | "ACCEPTED" | "DECLINED";
-    invitedUser: { id: string; name: string | null; username: string | null };
+    invitedUser: { id: string; name: string | null; username: string | null; image: string | null };
   }>;
 }
 
