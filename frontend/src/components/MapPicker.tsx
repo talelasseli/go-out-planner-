@@ -43,6 +43,13 @@ export default function MapPicker({ latitude, longitude, onPick, className }: Ma
   }, []);
 
   useEffect(() => {
+    if (!containerRef.current || !mapRef.current) return;
+    const observer = new ResizeObserver(() => mapRef.current?.resize());
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
 

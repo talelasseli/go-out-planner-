@@ -197,7 +197,7 @@ export default function CreatePlanPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="min-h-0 flex-1 p-0">
-              <div className="h-full [&>div]:!h-full">
+              <div className="h-full min-h-[250px]">
                 <MapPicker
                   latitude={latitude}
                   longitude={longitude}
@@ -205,6 +205,7 @@ export default function CreatePlanPage() {
                     setLatitude(lat);
                     setLongitude(lng);
                   }}
+                  className="h-full min-h-[250px]"
                 />
               </div>
             </CardContent>
