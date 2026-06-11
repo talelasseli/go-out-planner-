@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/card";
 import {
   Tabs,
-  TabsContent,
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
@@ -48,6 +47,8 @@ export default function SettingsPage() {
   const navigate = useNavigate();
   const { data: session } = authClient.useSession();
 
+  const [activeTab, setActiveTab] = useState("profile");
+
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [displayUsername, setDisplayUsername] = useState("");
@@ -78,6 +79,15 @@ export default function SettingsPage() {
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [profileError, setProfileError] = useState<string | null>(null);
 
+  const initialValuesRef = useRef({
+    name: "",
+    username: "",
+    displayUsername: "",
+    bio: "",
+    location: null as { latitude: number; longitude: number } | null,
+    image: null as string | null,
+  });
+
   useEffect(() => {
     let cancelled = false;
 
@@ -92,6 +102,14 @@ export default function SettingsPage() {
         setLocation(p.location);
         setAvatarPreview(p.image ?? null);
         setProfileError(null);
+        initialValuesRef.current = {
+          name: p.name ?? "",
+          username: p.username ?? "",
+          displayUsername: p.displayUsername ?? "",
+          bio: p.bio ?? "",
+          location: p.location,
+          image: p.image ?? null,
+        };
       })
       .catch((err) => {
         if (cancelled) return;
@@ -203,6 +221,17 @@ export default function SettingsPage() {
     }
   };
 
+  const handleCancel = () => {
+    const initial = initialValuesRef.current;
+    setName(initial.name);
+    setUsername(initial.username);
+    setDisplayUsername(initial.displayUsername);
+    setBio(initial.bio);
+    setLocation(initial.location);
+    setAvatarPreview(initial.image);
+    setAvatarFile(null);
+  };
+
   const handleChangePassword = async () => {
     setPasswordError(null);
 
@@ -270,7 +299,7 @@ export default function SettingsPage() {
 
   if (profileError) {
     return (
-      <div className="mx-auto max-w-2xl px-4 py-8">
+      <div className="mx-auto max-w-5xl px-4 py-8">
         <Card>
           <CardContent className="flex items-center gap-2 py-6 text-sm text-destructive">
             <AlertCircle className="size-4 shrink-0" />
@@ -282,7 +311,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-8">
+    <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-8">
       <Card className="overflow-hidden">
         <div className="bg-gradient-to-b from-primary/[0.04] to-background p-6">
           <h1 className="text-2xl font-bold">Settings</h1>
@@ -292,182 +321,202 @@ export default function SettingsPage() {
         </div>
       </Card>
 
-      <Tabs defaultValue="profile">
-        <TabsList className="w-full">
-          <TabsTrigger value="profile" className="flex-1">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="w-full gap-1.5 rounded-xl bg-muted p-1.5">
+          <TabsTrigger
+            value="profile"
+            className="flex-1 rounded-lg px-5 py-2.5 text-sm font-medium data-active:bg-primary/10 data-active:text-primary data-active:shadow-sm data-active:after:bg-primary data-active:after:opacity-100"
+          >
             <User className="mr-2 size-4" />
             Profile
           </TabsTrigger>
-          <TabsTrigger value="account" className="flex-1">
+          <TabsTrigger
+            value="account"
+            className="flex-1 rounded-lg px-5 py-2.5 text-sm font-medium data-active:bg-primary/10 data-active:text-primary data-active:shadow-sm data-active:after:bg-primary data-active:after:opacity-100"
+          >
             <Lock className="mr-2 size-4" />
             Account
           </TabsTrigger>
         </TabsList>
+      </Tabs>
 
-        <TabsContent value="profile" className="flex flex-col gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Avatar</CardTitle>
-              <CardDescription>
-                Upload a profile picture. JPEG, PNG, WebP, or GIF — max 5MB.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex flex-col items-center gap-4 sm:flex-row sm:items-start">
-              <Avatar size="lg" className="size-24">
-                <AvatarImage
-                  src={avatarPreview ?? undefined}
-                  alt="Avatar preview"
-                />
-                <AvatarFallback className="text-2xl">
-                  {session?.user.name?.charAt(0) ?? "?"}
-                </AvatarFallback>
-              </Avatar>
+      <div className="min-h-[640px]">
+      {activeTab === "profile" && (
+        <div className="flex flex-col gap-6">
+          <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
+            <Card>
+              <CardHeader>
+                <CardTitle>Avatar</CardTitle>
+                <CardDescription>
+                  Upload a profile picture. JPEG, PNG, WebP, or GIF — max 5MB.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex flex-col items-center gap-4">
+                <Avatar className="size-40">
+                  <AvatarImage
+                    src={avatarPreview ?? undefined}
+                    alt="Avatar preview"
+                  />
+                  <AvatarFallback className="text-4xl">
+                    {session?.user.name?.charAt(0) ?? "?"}
+                  </AvatarFallback>
+                </Avatar>
 
-              <div className="flex flex-col gap-3 w-full sm:w-auto">
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp,image/gif"
-                  onChange={handleFileSelect}
-                  className="hidden"
-                />
+                <div className="flex flex-col items-center gap-3">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/gif"
+                    onChange={handleFileSelect}
+                    className="hidden"
+                  />
 
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={uploading}
-                  >
-                    <Camera className="mr-2 size-4" />
-                    Choose Image
-                  </Button>
-
-                  {avatarFile && (
+                  <div className="flex flex-wrap justify-center gap-2">
                     <Button
+                      variant="outline"
                       size="sm"
-                      onClick={handleUploadAvatar}
+                      onClick={() => fileInputRef.current?.click()}
                       disabled={uploading}
                     >
-                      {uploading && <Spinner size="sm" />}
-                      <Upload className="mr-2 size-4" />
-                      Upload
+                      <Camera className="mr-2 size-4" />
+                      Choose Image
                     </Button>
+
+                    {avatarFile && (
+                      <Button
+                        size="sm"
+                        onClick={handleUploadAvatar}
+                        disabled={uploading}
+                      >
+                        {uploading && <Spinner size="sm" />}
+                        <Upload className="mr-2 size-4" />
+                        Upload
+                      </Button>
+                    )}
+                  </div>
+
+                  {avatarFile && (
+                    <p className="text-xs text-muted-foreground">
+                      {avatarFile.name} ({(avatarFile.size / 1024).toFixed(1)} KB)
+                    </p>
+                  )}
+
+                  {uploading && (
+                    <div className="w-full max-w-48">
+                      <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
+                        <div
+                          className="h-full rounded-full bg-primary transition-all duration-300"
+                          style={{ width: `${uploadProgress}%` }}
+                        />
+                      </div>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        {uploadProgress}%
+                      </p>
+                    </div>
                   )}
                 </div>
+              </CardContent>
+            </Card>
 
-                {avatarFile && (
-                  <p className="text-xs text-muted-foreground">
-                    {avatarFile.name} ({(avatarFile.size / 1024).toFixed(1)} KB)
-                  </p>
-                )}
-
-                {uploading && (
-                  <div className="w-full max-w-64">
-                    <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
-                      <div
-                        className="h-full rounded-full bg-primary transition-all duration-300"
-                        style={{ width: `${uploadProgress}%` }}
-                      />
-                    </div>
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      {uploadProgress}%
-                    </p>
+            <Card>
+              <CardHeader>
+                <CardTitle>Profile Information</CardTitle>
+                <CardDescription>
+                  Update your name, username, bio, and location.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex flex-col gap-4">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="flex flex-col gap-2">
+                    <Label htmlFor="name">Name</Label>
+                    <Input
+                      id="name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="Your name"
+                    />
                   </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+                  <div className="flex flex-col gap-2">
+                    <Label htmlFor="username">Username</Label>
+                    <Input
+                      id="username"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      placeholder="your-username"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="displayUsername">Display Name</Label>
+                  <Input
+                    id="displayUsername"
+                    value={displayUsername}
+                    onChange={(e) => setDisplayUsername(e.target.value)}
+                    placeholder="Display name"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="bio">Bio</Label>
+                  <textarea
+                    id="bio"
+                    value={bio}
+                    onChange={(e) => setBio(e.target.value)}
+                    placeholder="Tell us about yourself..."
+                    maxLength={500}
+                    className="flex min-h-[80px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                  />
+                  <span className="text-xs text-muted-foreground">
+                    {bio.length}/500
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
 
           <Card>
             <CardHeader>
-              <CardTitle>Profile Information</CardTitle>
+              <CardTitle>
+                <MapPin className="mr-1.5 inline size-4" />
+                Location
+              </CardTitle>
               <CardDescription>
-                Update your name, username, bio, and location.
+                Click on the map to set your location.
               </CardDescription>
             </CardHeader>
-            <CardContent className="flex flex-col gap-4">
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="name">Name</Label>
-                <Input
-                  id="name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Your name"
-                />
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="username">Username</Label>
-                <Input
-                  id="username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder="your-username"
-                />
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="displayUsername">Display Name</Label>
-                <Input
-                  id="displayUsername"
-                  value={displayUsername}
-                  onChange={(e) => setDisplayUsername(e.target.value)}
-                  placeholder="Display name"
-                />
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="bio">Bio</Label>
-                <textarea
-                  id="bio"
-                  value={bio}
-                  onChange={(e) => setBio(e.target.value)}
-                  placeholder="Tell us about yourself..."
-                  maxLength={500}
-                  className="flex min-h-[80px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                />
-                <span className="text-xs text-muted-foreground">
-                  {bio.length}/500
-                </span>
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <Label>
-                  <MapPin className="mr-1 inline size-3.5" />
-                  Location
-                </Label>
-                <p className="mb-1 text-xs text-muted-foreground">
-                  Click on the map to set your location.
+            <CardContent className="flex flex-col gap-3">
+              <MapPicker
+                latitude={location?.latitude}
+                longitude={location?.longitude}
+                onPick={(lat, lng) =>
+                  setLocation({ latitude: lat, longitude: lng })
+                }
+                className="h-80"
+              />
+              {location && (
+                <p className="text-xs text-muted-foreground">
+                  {location.latitude.toFixed(4)},{" "}
+                  {location.longitude.toFixed(4)}
                 </p>
-                <MapPicker
-                  latitude={location?.latitude}
-                  longitude={location?.longitude}
-                  onPick={(lat, lng) =>
-                    setLocation({ latitude: lat, longitude: lng })
-                  }
-                />
-                {location && (
-                  <p className="text-xs text-muted-foreground">
-                    {location.latitude.toFixed(4)},{" "}
-                    {location.longitude.toFixed(4)}
-                  </p>
-                )}
-              </div>
-
-              <Button
-                onClick={handleSaveProfile}
-                disabled={savingProfile}
-                className="self-start"
-              >
-                {savingProfile && <Spinner size="sm" />}
-                Save Changes
-              </Button>
+              )}
             </CardContent>
           </Card>
-        </TabsContent>
 
-        <TabsContent value="account" className="flex flex-col gap-6">
+          <div className="flex justify-end gap-3">
+            <Button variant="outline" onClick={handleCancel}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveProfile} disabled={savingProfile}>
+              {savingProfile && <Spinner size="sm" />}
+              Save Changes
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {activeTab === "account" && (
+        <div className="flex flex-col gap-6">
           <Card>
             <CardHeader>
               <CardTitle>Change Password</CardTitle>
@@ -508,14 +557,15 @@ export default function SettingsPage() {
                   placeholder="New password (min 8 characters)"
                 />
               </div>
-              <Button
-                onClick={handleChangePassword}
-                disabled={changingPassword}
-                className="self-start"
-              >
-                {changingPassword && <Spinner size="sm" />}
-                Change Password
-              </Button>
+              <div className="flex justify-end">
+                <Button
+                  onClick={handleChangePassword}
+                  disabled={changingPassword}
+                >
+                  {changingPassword && <Spinner size="sm" />}
+                  Change Password
+                </Button>
+              </div>
             </CardContent>
           </Card>
 
@@ -553,20 +603,22 @@ export default function SettingsPage() {
                   placeholder="Your password"
                 />
               </div>
-              <Button
-                variant="destructive"
-                onClick={openDeleteDialog}
-                disabled={deleting}
-                className="self-start"
-              >
-                <Trash2 className="mr-2 size-4" />
-                Delete Account
-              </Button>
+              <div className="flex justify-end">
+                <Button
+                  variant="destructive"
+                  onClick={openDeleteDialog}
+                  disabled={deleting}
+                >
+                  <Trash2 className="mr-2 size-4" />
+                  Delete Account
+                </Button>
+              </div>
             </CardContent>
           </Card>
-        </TabsContent>
-      </Tabs>
+        </div>
+      )}
 
+      </div>
       <ConfirmDialog
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
