@@ -167,7 +167,7 @@ export default function DashboardPage() {
         </div>
         <h1 className="text-3xl font-bold tracking-tight">
           Ready for your next night out
-          {session?.user.name ? `, ${session.user.name}` : ""}?
+          {session?.user?.name ? `, ${session.user.name}` : ""}?
         </h1>
         <p className="max-w-md text-balance text-muted-foreground">
           Plan something memorable, invite your friends, and keep everyone in

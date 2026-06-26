@@ -1,8 +1,9 @@
 import { prisma } from "../../shared/prisma.js";
 import { AppError } from "../../shared/errors.js";
+import { createNotification, publishNotification } from "../notifications/notifications.service.js";
 import type { CreatePlanDto } from "./plans.validation.js";
 
-export async function createPlan(data: CreatePlanDto, userId: string) {
+export async function createPlan(data: CreatePlanDto, userId: string, creatorName: string) {
   if (data.invitedUserIds.includes(userId)) {
     throw new AppError(400, "Cannot invite yourself");
   }
@@ -25,7 +26,7 @@ export async function createPlan(data: CreatePlanDto, userId: string) {
     throw new AppError(400, "All invited users must be friends with you");
   }
 
-  const plan = await prisma.$transaction(async (tx) => {
+  const { plan, notifications } = await prisma.$transaction(async (tx) => {
     const newPlan = await tx.plan.create({
       data: {
         creatorId: userId,
@@ -58,8 +59,22 @@ export async function createPlan(data: CreatePlanDto, userId: string) {
       ),
     );
 
-    return { ...newPlan, invitations: createdInvites };
+    const notifications = await Promise.all(
+      data.invitedUserIds.map((invitedUserId) =>
+        createNotification(tx, {
+          userId: invitedUserId,
+          type: "INVITATION",
+          title: "New plan invitation",
+          message: `${creatorName} invited you to "${data.title}"`,
+          link: "/invitations",
+        }),
+      ),
+    );
+
+    return { plan: { ...newPlan, invitations: createdInvites }, notifications };
   });
+
+  notifications.forEach(publishNotification);
 
   return plan;
 }

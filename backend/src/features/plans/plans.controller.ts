@@ -5,7 +5,7 @@ import { success, message, created } from "../../shared/response.js";
 
 export async function create(req: Request, res: Response) {
   const data = createPlanSchema.parse(req.body);
-  const plan = await planService.createPlan(data, req.user!.id);
+  const plan = await planService.createPlan(data, req.user!.id, req.user!.name ?? "Someone");
   created(res, { plan });
 }
 

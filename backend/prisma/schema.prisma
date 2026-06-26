@@ -24,6 +24,12 @@ enum InvitationStatus {
   DECLINED
 }
 
+enum NotificationType {
+  FRIEND_REQUEST
+  INVITATION
+  INVITATION_RESPONSE
+}
+
 model User {
   id            String    @id
   name          String?
@@ -47,6 +53,7 @@ model User {
 
   createdPlans Plan[]             @relation("CreatedPlans")
   invitations  PlanInvitation[]   @relation("UserInvitations")
+  notifications Notification[]
 
   @@unique([email])
   @@map("user")
@@ -128,6 +135,23 @@ model PlanInvitation {
   @@unique([planId, invitedUserId])
   @@index([invitedUserId, status])
   @@map("plan_invitations")
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  message   String
+  link      String?
+  read      Boolean          @default(false)
+  createdAt DateTime          @default(now())
+
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, read])
+  @@index([userId, createdAt])
+  @@map("notifications")
 }
 
 model Session {

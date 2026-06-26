@@ -358,7 +358,7 @@ export default function SettingsPage() {
                     alt="Avatar preview"
                   />
                   <AvatarFallback className="text-4xl">
-                    {session?.user.name?.charAt(0) ?? "?"}
+                    {session?.user?.name?.charAt(0) ?? "?"}
                   </AvatarFallback>
                 </Avatar>
 

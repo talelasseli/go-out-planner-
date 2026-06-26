@@ -10,12 +10,12 @@ export async function list(req: Request, res: Response) {
 
 export async function accept(req: Request, res: Response) {
   const { invitationId } = invitationIdParamSchema.parse(req.params);
-  await invitationService.acceptInvitation(invitationId, req.user!.id);
+  await invitationService.acceptInvitation(invitationId, req.user!.id, req.user!.name ?? "Someone");
   message(res, "Invitation accepted");
 }
 
 export async function decline(req: Request, res: Response) {
   const { invitationId } = invitationIdParamSchema.parse(req.params);
-  await invitationService.declineInvitation(invitationId, req.user!.id);
+  await invitationService.declineInvitation(invitationId, req.user!.id, req.user!.name ?? "Someone");
   message(res, "Invitation declined");
 }

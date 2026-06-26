@@ -1,5 +1,6 @@
 import { prisma } from "../../shared/prisma.js";
 import { AppError } from "../../shared/errors.js";
+import { createNotification, publishNotification } from "../notifications/notifications.service.js";
 import type { UserWithRelationship, SendRequestResult } from "./friends.types.js";
 
 export async function searchUsers(query: string, userId: string): Promise<UserWithRelationship[]> {
@@ -79,6 +80,7 @@ export async function searchUsers(query: string, userId: string): Promise<UserWi
 export async function sendFriendRequest(
   receiverId: string,
   senderId: string,
+  senderName: string,
 ): Promise<SendRequestResult> {
   if (receiverId === senderId) {
     throw new AppError(400, "Cannot send friend request to yourself");
@@ -108,10 +110,21 @@ export async function sendFriendRequest(
   }
 
   if (existingSent && existingSent.status === "REJECTED") {
-    const request = await prisma.friendRequest.update({
-      where: { id: existingSent.id },
-      data: { status: "PENDING", respondedAt: null },
+    const { request, notification } = await prisma.$transaction(async (tx) => {
+      const request = await tx.friendRequest.update({
+        where: { id: existingSent.id },
+        data: { status: "PENDING", respondedAt: null },
+      });
+      const notification = await createNotification(tx, {
+        userId: receiverId,
+        type: "FRIEND_REQUEST",
+        title: "New friend request",
+        message: `${senderName} sent you a friend request`,
+        link: "/friend-requests",
+      });
+      return { request, notification };
     });
+    publishNotification(notification);
     return { kind: "resent", request: { id: request.id, senderId, receiverId, status: request.status } };
   }
 
@@ -120,7 +133,7 @@ export async function sendFriendRequest(
   });
 
   if (existingReverse && existingReverse.status === "PENDING") {
-    await prisma.$transaction(async (tx) => {
+    const { notification } = await prisma.$transaction(async (tx) => {
       await tx.friendRequest.update({
         where: { id: existingReverse.id },
         data: { status: "ACCEPTED", respondedAt: new Date() },
@@ -132,13 +145,33 @@ export async function sendFriendRequest(
         ],
         skipDuplicates: true,
       });
+      const notification = await createNotification(tx, {
+        userId: receiverId,
+        type: "FRIEND_REQUEST",
+        title: "Friend request accepted",
+        message: `${senderName} accepted your friend request`,
+        link: "/friends",
+      });
+      return { notification };
     });
+    publishNotification(notification);
     return { kind: "auto_accepted" };
   }
 
-  const request = await prisma.friendRequest.create({
-    data: { senderId, receiverId, status: "PENDING" },
+  const { request, notification } = await prisma.$transaction(async (tx) => {
+    const request = await tx.friendRequest.create({
+      data: { senderId, receiverId, status: "PENDING" },
+    });
+    const notification = await createNotification(tx, {
+      userId: receiverId,
+      type: "FRIEND_REQUEST",
+      title: "New friend request",
+      message: `${senderName} sent you a friend request`,
+      link: "/friend-requests",
+    });
+    return { request, notification };
   });
+  publishNotification(notification);
 
   return { kind: "created", request: { id: request.id, senderId, receiverId, status: request.status } };
 }
@@ -158,7 +191,7 @@ export async function getReceivedRequests(userId: string) {
   });
 }
 
-export async function acceptFriendRequest(requestId: string, userId: string) {
+export async function acceptFriendRequest(requestId: string, userId: string, userName: string) {
   const request = await prisma.friendRequest.findUnique({
     where: { id: requestId },
   });
@@ -175,7 +208,7 @@ export async function acceptFriendRequest(requestId: string, userId: string) {
     throw new AppError(400, "Friend request is not pending");
   }
 
-  await prisma.$transaction(async (tx) => {
+  const { notification } = await prisma.$transaction(async (tx) => {
     await tx.friendRequest.update({
       where: { id: requestId },
       data: { status: "ACCEPTED", respondedAt: new Date() },
@@ -187,7 +220,16 @@ export async function acceptFriendRequest(requestId: string, userId: string) {
       ],
       skipDuplicates: true,
     });
+    const notification = await createNotification(tx, {
+      userId: request.senderId,
+      type: "FRIEND_REQUEST",
+      title: "Friend request accepted",
+      message: `${userName} accepted your friend request`,
+      link: "/friends",
+    });
+    return { notification };
   });
+  publishNotification(notification);
 }
 
 export async function rejectFriendRequest(requestId: string, userId: string) {

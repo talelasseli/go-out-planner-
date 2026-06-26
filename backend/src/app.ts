@@ -11,6 +11,7 @@ import plansRoutes from "./features/plans/plans.routes.js";
 import invitationsRoutes from "./features/invitations/invitations.routes.js";
 import profileRoutes from "./features/profile/profile.routes.js";
 import avatarRoutes from "./features/avatar/avatar.routes.js";
+import notificationsRoutes from "./features/notifications/notifications.routes.js";
 import { auth } from "./lib/auth.js";
 import { env } from "./shared/env.js";
 
@@ -63,6 +64,7 @@ app.use("/api", plansRoutes);
 app.use("/api", invitationsRoutes);
 app.use("/api", profileRoutes);
 app.use("/api", avatarRoutes);
+app.use("/api", notificationsRoutes);
 
 app.get("/health", (_req, res) => {
   res.json({ status: "ok" });

@@ -117,7 +117,7 @@ export default function PlanDetailsPage() {
     };
   }, [planId]);
 
-  const isCreator = plan && session?.user.id === plan.creator.id;
+  const isCreator = plan && session?.user?.id === plan.creator.id;
 
   async function handleCancel() {
     if (!plan) return;

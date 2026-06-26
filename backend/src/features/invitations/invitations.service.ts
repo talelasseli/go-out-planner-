@@ -1,5 +1,6 @@
 import { prisma } from "../../shared/prisma.js";
 import { AppError } from "../../shared/errors.js";
+import { createNotification, publishNotification } from "../notifications/notifications.service.js";
 
 async function findOwnPendingInvitation(invitationId: string, userId: string) {
   const invitation = await prisma.planInvitation.findUnique({
@@ -49,20 +50,54 @@ export async function listInvitations(userId: string) {
   });
 }
 
-export async function acceptInvitation(invitationId: string, userId: string) {
+export async function acceptInvitation(invitationId: string, userId: string, userName: string) {
+  const invitation = await invitationWithPlan(invitationId);
   await findOwnPendingInvitation(invitationId, userId);
 
-  await prisma.planInvitation.update({
-    where: { id: invitationId },
-    data: { status: "ACCEPTED", respondedAt: new Date() },
+  const { notification } = await prisma.$transaction(async (tx) => {
+    await tx.planInvitation.update({
+      where: { id: invitationId },
+      data: { status: "ACCEPTED", respondedAt: new Date() },
+    });
+    const notification = await createNotification(tx, {
+      userId: invitation!.plan.creatorId,
+      type: "INVITATION_RESPONSE",
+      title: "Invitation accepted",
+      message: `${userName} accepted your invitation to "${invitation!.plan.title}"`,
+      link: `/plans/${invitation!.planId}`,
+    });
+    return { notification };
   });
+  publishNotification(notification);
 }
 
-export async function declineInvitation(invitationId: string, userId: string) {
+export async function declineInvitation(invitationId: string, userId: string, userName: string) {
+  const invitation = await invitationWithPlan(invitationId);
   await findOwnPendingInvitation(invitationId, userId);
 
-  await prisma.planInvitation.update({
+  const { notification } = await prisma.$transaction(async (tx) => {
+    await tx.planInvitation.update({
+      where: { id: invitationId },
+      data: { status: "DECLINED", respondedAt: new Date() },
+    });
+    const notification = await createNotification(tx, {
+      userId: invitation!.plan.creatorId,
+      type: "INVITATION_RESPONSE",
+      title: "Invitation declined",
+      message: `${userName} declined your invitation to "${invitation!.plan.title}"`,
+      link: `/plans/${invitation!.planId}`,
+    });
+    return { notification };
+  });
+  publishNotification(notification);
+}
+
+async function invitationWithPlan(invitationId: string) {
+  return prisma.planInvitation.findUnique({
     where: { id: invitationId },
-    data: { status: "DECLINED", respondedAt: new Date() },
+    select: {
+      planId: true,
+      plan: { select: { creatorId: true, title: true } },
+    },
   });
 }

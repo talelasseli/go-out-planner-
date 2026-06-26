@@ -11,7 +11,7 @@ export async function search(req: Request, res: Response) {
 
 export async function send(req: Request, res: Response) {
   const { receiverId } = sendFriendRequestSchema.parse(req.body);
-  const result = await friendService.sendFriendRequest(receiverId, req.user!.id);
+  const result = await friendService.sendFriendRequest(receiverId, req.user!.id, req.user!.name ?? "Someone");
 
   switch (result.kind) {
     case "already_sent":
@@ -36,7 +36,7 @@ export async function listReceived(req: Request, res: Response) {
 
 export async function accept(req: Request, res: Response) {
   const { id } = requestIdParamSchema.parse(req.params);
-  await friendService.acceptFriendRequest(id, req.user!.id);
+  await friendService.acceptFriendRequest(id, req.user!.id, req.user!.name ?? "Someone");
   message(res, "Friend request accepted");
 }
 

@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Menu, Settings, LogOut } from "lucide-react";
 import { SideSheetNav } from "./SideSheetNav";
 import ThemeToggle from "./ThemeToggle";
+import NotificationBell from "./NotificationBell";
 
 export default function AppLayout() {
   const navigate = useNavigate();
@@ -40,9 +41,9 @@ export default function AppLayout() {
             <SheetContent side="left" className="!w-76 p-0">
               <SheetTitle className="sr-only">Navigation menu</SheetTitle>
               <SideSheetNav
-                userName={session?.user.name}
-                userEmail={session?.user.email}
-                userImage={session?.user.image}
+                userName={session?.user?.name}
+                userEmail={session?.user?.email}
+                userImage={session?.user?.image}
                 onLinkClick={() => {}}
                 onSignOut={handleSignOut}
               />
@@ -57,17 +58,18 @@ export default function AppLayout() {
 
         <div className="flex items-center gap-1">
           <ThemeToggle />
+          <NotificationBell />
           <DropdownMenu>
             <DropdownMenuTrigger
               render={<Button variant="ghost" size="icon" className="rounded-full" aria-label="User menu" />}
             >
               <Avatar className="size-8">
                 <AvatarImage
-                  src={session?.user.image ?? undefined}
-                  alt={session?.user.name ?? "User avatar"}
+                  src={session?.user?.image ?? undefined}
+                  alt={session?.user?.name ?? "User avatar"}
                 />
                 <AvatarFallback>
-                  {session?.user.name?.charAt(0) ?? "?"}
+                  {session?.user?.name?.charAt(0) ?? "?"}
                 </AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>
@@ -75,10 +77,10 @@ export default function AppLayout() {
               <div className="flex items-center gap-2 px-2 py-1.5">
                 <div className="flex flex-col">
                   <span className="text-sm font-medium">
-                    {session?.user.name}
+                    {session?.user?.name}
                   </span>
                   <span className="text-xs text-muted-foreground">
-                    {session?.user.email}
+                    {session?.user?.email}
                   </span>
                 </div>
               </div>
